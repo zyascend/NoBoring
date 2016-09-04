@@ -1,0 +1,36 @@
+<resources>
+    <string name="app_name">不许无聊</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <string name="action_settings">设置</string>
+    <string name="action_share">分享</string>
+    <string name="app">应用</string>
+    <string name="clear_cache">清除缓存</string>
+    <string name="text_advice">提交bug或意见</string>
+    <string name="advice">应用反馈</string>
+    <string name="text_about">联系作者</string>
+    <string name="text_github">GitHub地址</string>
+    <string name="github_address">zyascend.github.com/NoBoring</string>
+    <string name="ad_email">邮件：1334553391@qq.com</string>
+    <string name="adress_weibo">微博：weibo.com/zyascend</string>
+    <string name="author">作者</string>
+    <string name="tag">TAG</string>
+    <string name="fresh">新鲜事</string>
+    <string name="joke">段子</string>
+    <string name="meizhi">妹纸</string>
+    <string name="weixin">微信精选</string>
+    <string name="noPic">无图模式</string>
+    <string name="nightMode">夜间模式</string>
+    <string name="noboring">NoBoring</string>
+    <string name="version">V 1.0.0</string>
+    <string name="laodingError">加载出错了⊙︿⊙</string>
+    <string name="error_retry">加载出错了0_0,请下拉重试</string>
+    <string name="share">分享</string>
+    <string name="save">保存</string>
+    <string name="chucuo">出错了( ＞ω＜)</string>
+    <string name="nomore">没有了⊙︿⊙</string>
+    <string name="loading">加载中...</string>
+    <string name="app_des">生活从不无聊</string>
+</resources>

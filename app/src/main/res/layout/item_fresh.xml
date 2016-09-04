@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/cv_item"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    style="@style/NormalCard">
+
+    <LinearLayout
+        android:layout_marginEnd="20dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginBottom="8dp"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:scaleType="centerCrop"
+            tools:src="@drawable/drawer_day"
+            android:layout_gravity="center_vertical"
+            android:layout_width="80dp"
+            android:layout_height="60dp"
+            android:id="@+id/iv_preview"/>
+        <RelativeLayout
+            android:layout_marginStart="8dp"
+            android:id="@+id/rl_item"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <LinearLayout
+                android:id="@+id/top_linear"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:textColor="?titleColor"
+                    android:id="@+id/tv_title"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:lineSpacingExtra="2dp"
+                    android:maxLines="3"
+                    android:padding="3dp"
+                    android:textSize="14sp"
+                    tools:text="新闻标题新闻标题新闻标题新闻标题新闻标题新闻标题,不忘初心,方得始终." />
+            </LinearLayout>
+            <TextView
+                android:layout_marginTop="8dp"
+                android:layout_below="@+id/top_linear"
+                android:textColor="?textColor"
+                android:id="@+id/tv_author"
+                android:textSize="13sp"
+                android:text="@string/author"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true" />
+
+            <TextView
+                android:textColor="?textColor"
+                android:textSize="13sp"
+                android:text="@string/tag"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="30dp"
+                android:id="@+id/tv_tag"
+                android:layout_alignTop="@+id/tv_author"
+                android:layout_toEndOf="@+id/tv_author" />
+        </RelativeLayout>
+    </LinearLayout>
+</android.support.v7.widget.CardView>

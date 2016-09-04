@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <color name="colorPrimary">#4FAE4B</color>
+    <color name="colorPrimaryDark">#4FAE4B</color>
+    <color name="colorAccent">#4FAE4B</color>
+
+
+    <!--<color name="night_mask">@android:color/transparent</color>-->
+    <color name="night_mask">#90000000</color>
+
+    <color name="background_day">#F4EEEA</color>
+    <color name="background_night">#302B21</color>
+
+    <color name="card_night">#4F4737</color>
+    <color name="card_day">#ffffff</color>
+
+    <color name="text_night">#AEAAA2</color>
+    <color name="text_day">#8f8f8f</color>
+
+    <color name="title_night">#E8E7E5</color>
+    <color name="title_day">#2A2A2A</color>
+
+    <color name="tab_night">@color/material_orange</color>
+    <color name="tab_day">@color/material_blue</color>
+
+    <color name="material_blue">#2196F3</color>
+    <color name="material_light_blue">#03A9F4</color>
+    <color name="pink">#fb7299</color>
+    <color name="material_red">#F44336</color>
+    <color name="material_purple">#9C27B0</color>
+    <color name="material_deep_purple">#673AB7</color>
+    <color name="material_teal">#009688</color>
+    <color name="material_deep_orange">#FF5722</color>
+    <color name="material_green">#4CAF50</color>
+    <color name="material_cyan">#00BCD4</color>
+    <color name="material_orange">#FF9800</color>
+    <color name="material_indigo">#3F51B5</color>
+    <color name="material_brown">#795548</color>
+    <color name="material_blue_gray">#607D8B</color>
+    <color name="material_amber">#FFC107</color>
+    <color name="settings_item_title">#BB000000</color>
+    <color name="settings_item_desc">#55000000</color>
+    <color name="dialog_text_color">#99000000</color>
+
+    <color name="white">#ffffff</color>
+</resources>
