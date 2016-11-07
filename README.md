@@ -14,7 +14,7 @@
 
 ## 知识点
 
- - RaJava + Retrofit请求网络数据
+ - RxJava + Retrofit请求网络数据
  - Glide 实现加载图片与缓存
  - SQLite 实现数据缓存
  - Leakcanary 检测内存泄漏
