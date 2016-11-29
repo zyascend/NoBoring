@@ -1,29 +1,34 @@
 package com.zyascend.NoBoring.fragment;
 
 import android.content.Intent;
-import android.os.Handler;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.util.Log;
+import android.view.View;
+import android.widget.LinearLayout;
 
 import com.jude.easyrecyclerview.EasyRecyclerView;
 import com.jude.easyrecyclerview.adapter.RecyclerArrayAdapter;
+import com.zyascend.NoBoring.API;
+import com.zyascend.NoBoring.Constants;
 import com.zyascend.NoBoring.R;
 import com.zyascend.NoBoring.activity.PhotoActivity;
 import com.zyascend.NoBoring.adapter.GirlAdapter;
+import com.zyascend.NoBoring.base.BaseFlatMap;
 import com.zyascend.NoBoring.base.BaseFragment;
-import com.zyascend.NoBoring.data.Database;
-import com.zyascend.NoBoring.model.GirlResult;
-import com.zyascend.NoBoring.utils.RetrofitUtils;
-
+import com.zyascend.NoBoring.dao.Girl;
+import com.zyascend.NoBoring.dao.GirlResult;
+import com.zyascend.NoBoring.utils.CacheSubscriber;
+import com.zyascend.NoBoring.utils.DaoUtils;
+import com.zyascend.NoBoring.utils.RetrofitService;
+import com.zyascend.NoBoring.utils.RxTransformer;
 import java.util.ArrayList;
 import java.util.List;
-
 import butterknife.Bind;
-import rx.Observer;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Func1;
-import rx.schedulers.Schedulers;
+import rx.Observable;
+import rx.Subscriber;
+import rx.functions.Action0;
+
 
 /**
  *
@@ -34,19 +39,31 @@ public class GirlFragment extends BaseFragment implements SwipeRefreshLayout.OnR
 
     private static final String TAG = "TAG_GirlFragment";
 
-    @Bind(R.id.easy_recyclerview)
+    @Bind(R.id.recyclerview)
     EasyRecyclerView easyRecyclerview;
+    @Bind(R.id.ll_error)
+    LinearLayout llError;
 
-    private List<GirlResult.Girl> mList;
+    private List<Girl> mList;
     private GirlAdapter adapter;
-    private Handler handler = new Handler();
     private int page = 1;
-    private Database mSqlite;
+    private API.GirlApi api;
+    private boolean isRefresh;
+
+    @Override
+    protected void lazyLoad() {
+        easyRecyclerview.post(new Runnable() {
+            @Override
+            public void run() {
+                easyRecyclerview.setRefreshing(true);
+                onRefresh();
+            }
+        });
+    }
 
     @Override
     protected void initViews() {
 
-        mSqlite = Database.getInstance(getActivity());
         mList = new ArrayList<>();
         adapter = new GirlAdapter(getContext());
         adapter.setMore(R.layout.load_more,this);
@@ -64,28 +81,34 @@ public class GirlFragment extends BaseFragment implements SwipeRefreshLayout.OnR
         easyRecyclerview.setAdapterWithProgress(adapter);
         easyRecyclerview.setRefreshListener(this);
 
-        onRefresh();
+        api = RetrofitService.init().createAPI(Constants.BASE_GANK_URL, API.GirlApi.class);
 
-        Log.d(TAG, "initView: ");
+
     }
 
     private void enterActivity(int position) {
         Intent intent = new Intent(getActivity(),PhotoActivity.class);
-        intent.putExtra("title",adapter.getItem(position).desc);
-        intent.putExtra("url",adapter.getItem(position).url);
+        intent.putExtra("title",adapter.getItem(position).getDesc());
+        intent.putExtra("url",adapter.getItem(position).getUrl());
         intent.putExtra("isGif",false);
         startActivity(intent);
-
     }
 
     @Override
     public int getLayoutId() {
-        return R.layout.fragment_girl;
+        return R.layout.fragment_easy_recycler;
     }
 
     @Override
-    protected void showEorror() {
+    protected void showError() {
+        if (llError != null){
+            llError.setVisibility(View.VISIBLE);
+        }
 
+        if (easyRecyclerview != null){
+            easyRecyclerview.setRefreshing(false);
+            easyRecyclerview.setVisibility(View.GONE);
+        }
     }
 
     @Override
@@ -95,16 +118,24 @@ public class GirlFragment extends BaseFragment implements SwipeRefreshLayout.OnR
 
     @Override
     protected void showLoadingComplete() {
+        if (llError != null){
+            llError.setVisibility(View.GONE);
+        }
 
+        if (easyRecyclerview != null){
+            easyRecyclerview.setRefreshing(false);
+        }
     }
 
     @Override
     public void onRefresh() {
+        isRefresh = true;
+        page = 1;
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
                 adapter.clear();
-                loadGirl(20,1);
+                loadGirl(20,page);
                 page = 2;
             }
         },1000);
@@ -112,33 +143,37 @@ public class GirlFragment extends BaseFragment implements SwipeRefreshLayout.OnR
     }
 
     private void loadGirl(final int num, int page) {
-        unsubscrible();
-        subscription = RetrofitUtils.getGirlApi()
-                .getGirl(num,page)
-                .map(new Func1<GirlResult, List<GirlResult.Girl>>() {
+
+        api.getGirl(num,page)
+                .compose(RxTransformer.INSTANCE.<GirlResult>transform(lifeCycleSubject))
+                .doOnSubscribe(new Action0() {
                     @Override
-                    public List<GirlResult.Girl> call(GirlResult girlResult) {
-                        return girlResult.girls;
+                    public void call() {
+
                     }
                 })
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Observer<List<GirlResult.Girl>>() {
+                .flatMap(MapGirl.getInstance())
+                .subscribe(new CacheSubscriber<List<Girl>>() {
                     @Override
-                    public void onCompleted() {
-
+                    protected void onRealError() {
+                        showError();
                     }
-                    @Override
-                    public void onError(Throwable e) {
-                        Log.d(TAG, "onError: "+e.toString());
-                        adapter.addAll(mSqlite.getAllGirls());
-                    }
-                    @Override
-                    public void onNext(List<GirlResult.Girl> girls) {
-                        mList = girls;
-                        Log.d(TAG, "onNext: size = " + mList.size());
-                        adapter.addAll(mList);
 
+                    @Override
+                    protected List<Girl> getFromCache() {
+                        return DaoUtils.getInstance().getGirls();
+                    }
+
+                    @Override
+                    public void onNext(List<Girl> girls) {
+                        showLoadingComplete();
+                        if (isRefresh){
+                            mList.clear();
+                            adapter.clear();
+                            isRefresh = false;
+                        }
+                        mList.addAll(girls);
+                        adapter.addAll(girls);
                     }
                 });
     }
@@ -152,5 +187,38 @@ public class GirlFragment extends BaseFragment implements SwipeRefreshLayout.OnR
                 page++;
             }
         }, 1000);
+    }
+
+    private static class MapGirl extends BaseFlatMap<GirlResult,List<Girl>> {
+
+        private static MapGirl INSTANCE;
+
+        @Override
+        protected List<Girl> getFromCache() {
+            return DaoUtils.getInstance().getGirls();
+        }
+
+        @Override
+        protected Observable<List<Girl>> doForMap(GirlResult girlResult) {
+            List<Girl> list;
+            try {
+                list = girlResult.girls;
+            }catch (Exception e){
+                return Observable.error(e);
+            }
+            return createObservable(list);
+        }
+
+        @Override
+        protected void saveToCache(List<Girl> data) {
+            DaoUtils.getInstance().saveGirls(data);
+        }
+
+        public static MapGirl getInstance() {
+            if (INSTANCE == null){
+                INSTANCE = new MapGirl();
+            }
+            return INSTANCE;
+        }
     }
 }

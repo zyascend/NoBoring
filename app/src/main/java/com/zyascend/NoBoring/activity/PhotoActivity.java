@@ -1,60 +1,55 @@
 package com.zyascend.NoBoring.activity;
 
 import android.Manifest;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
-import android.graphics.Color;
+import android.graphics.PointF;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
-import android.os.Bundle;
 import android.os.Environment;
+import android.os.Looper;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.WindowManager;
-import android.webkit.WebChromeClient;
-import android.webkit.WebView;
-import android.webkit.WebViewClient;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.load.resource.gif.GifDrawable;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.SimpleTarget;
 import com.bumptech.glide.request.target.Target;
+import com.davemorrissey.labs.subscaleview.ImageSource;
+import com.davemorrissey.labs.subscaleview.ImageViewState;
+import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView;
 import com.litesuits.common.io.FileUtils;
-import com.litesuits.common.utils.FileUtil;
 import com.zyascend.NoBoring.R;
 import com.zyascend.NoBoring.base.BaseActivity;
 import com.zyascend.NoBoring.utils.ActivityUtils;
-
-import org.json.JSONObject;
+import com.zyascend.NoBoring.utils.RxTransformer;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.net.URL;
-import java.util.UUID;
+import java.util.concurrent.ExecutionException;
 
 import butterknife.Bind;
-import butterknife.ButterKnife;
 import rx.Observable;
 import rx.Observer;
+import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Action1;
+import rx.functions.Action0;
 import rx.functions.Func1;
 import rx.schedulers.Schedulers;
-import uk.co.senab.photoview.PhotoView;
 
 /**
  *
@@ -64,59 +59,106 @@ public class PhotoActivity extends BaseActivity {
 
 
     private static final String TAG = "TAG_PhotoActivity";
-    @Bind(R.id.photoview)
-    PhotoView photoView;
+
+    @Bind(R.id.photo)
+    SubsamplingScaleImageView largeView;
+    @Bind(R.id.gif_imageView)
+    ImageView gifView;
 
 
     private String title;
     private String url;
     private boolean isGif;
-    private Bitmap mBitmap;
 
     public static final String EXTRA_TITLE = "title";
     public static final String EXTRA_URL = "url";
     public static final String EXTRA_IS_GIF = "isGif";
+    private ProgressDialog dialog;
 
     @Override
     protected void initView() {
+
+        largeView.setMinimumScaleType(SubsamplingScaleImageView.SCALE_TYPE_CUSTOM);
+
+        largeView.setMinScale(1.0F);//最小显示比例
+
+        largeView.setMaxScale(5.0F);//最大显示比例
+
+        dialog = new ProgressDialog(this);
         title = getIntent().getStringExtra(EXTRA_TITLE);
         url = getIntent().getStringExtra(EXTRA_URL);
         isGif = getIntent().getBooleanExtra(EXTRA_IS_GIF,false);
         setToolbarTitle(title);
-        loadPhoto(isGif);
+
+        showLoading();
+
+        if (!isGif){
+            loadLargePic();
+        }else{
+            loadGif();
+        }
     }
 
-    private void loadPhoto(boolean isGif) {
-        if (!isGif){
-            Glide.with(PhotoActivity.this)
-                    .load(url)
-                    .asBitmap()
-                    .diskCacheStrategy(DiskCacheStrategy.SOURCE)
-                    .listener(new RequestListener<String, Bitmap>() {
-                        @Override
-                        public boolean onException(Exception e, String model, Target<Bitmap> target, boolean isFirstResource) {
-                            return false;
-                        }
+    private void loadGif() {
+        largeView.setVisibility(View.GONE);
+        gifView.setVisibility(View.VISIBLE);
+        Glide.with(this)
+                .load(url)
+                .asGif()
+                .listener(new RequestListener<String, GifDrawable>() {
+                    @Override
+                    public boolean onException(Exception e, String model, Target<GifDrawable> target, boolean isFirstResource) {
+                        showError();
+                        return false;
+                    }
 
-                        @Override
-                        public boolean onResourceReady(Bitmap resource, String model, Target<Bitmap> target, boolean isFromMemoryCache, boolean isFirstResource) {
-                            return false;
-                        }
-                    })
-                    .into(new SimpleTarget<Bitmap>() {
-                        @Override
-                        public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
-                            photoView.setImageBitmap(resource);
-                            mBitmap = resource;
-                        }
-                    });
-        }else{
-            Glide.with(this)
-                    .load(url)
-                    .asGif()
-                    .diskCacheStrategy(DiskCacheStrategy.SOURCE)
-                    .into(photoView);
-        }
+                    @Override
+                    public boolean onResourceReady(GifDrawable resource, String model, Target<GifDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
+                        showSuccess();
+                        return false;
+                    }
+                })
+                .diskCacheStrategy(DiskCacheStrategy.SOURCE)
+        .into(gifView);
+    }
+
+    private void loadLargePic() {
+        largeView.setVisibility(View.VISIBLE);
+        gifView.setVisibility(View.GONE);
+        Glide.with(PhotoActivity.this)
+                .load(url)
+                .downloadOnly(new SimpleTarget<File>() {
+                    @Override
+                    public void onResourceReady(File resource, GlideAnimation<? super File> glideAnimation) {
+                        showSuccess();
+                        largeView.setImage(ImageSource.uri(Uri.fromFile(resource)),new ImageViewState(1.5F, new PointF(0, 0), 0));
+                    }
+
+                    @Override
+                    public void onStart() {
+                        super.onStart();
+
+                    }
+
+                    @Override
+                    public void onLoadFailed(Exception e, Drawable errorDrawable) {
+                        super.onLoadFailed(e, errorDrawable);
+                        showError();
+                    }
+                });
+    }
+
+    private void showError() {
+        Toast.makeText(this, "啊哦，加载失败了...", Toast.LENGTH_SHORT).show();
+    }
+
+    private void showSuccess(){
+        dialog.dismiss();
+    }
+
+    private void showLoading() {
+        dialog.setMessage("图片加载中...");
+        dialog.show();
     }
 
     @Override
@@ -126,9 +168,7 @@ public class PhotoActivity extends BaseActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-
         getMenuInflater().inflate(R.menu.menu_photo,menu);
-
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -147,126 +187,110 @@ public class PhotoActivity extends BaseActivity {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                         requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
                     }
+                    Toast.makeText(this, "权限已获取，请重试", Toast.LENGTH_SHORT).show();
                 } else {
-                    if (isGif){
-                        saveGif();
-                    }else {
-                        savePhoto();
-                    }
+                    savePhoto();
                 }
-
                 break;
         }
         return super.onOptionsItemSelected(item);
     }
 
-    private void saveGif() {
-        GifTask task = new GifTask(this);
-        task.execute(url);
-    }
 
     private void savePhoto() {
 
-        Observable observable = Observable.just(mBitmap)
-                .map(new Func1<Bitmap, Uri>() {
+        dialog.setMessage("下载中...");
+        dialog.show();
+
+        Observable.just(url)
+                .map(new Func1<String, Uri>() {
                     @Override
-                    public Uri call(Bitmap bitmap) {
-                        return handleBitmap(bitmap);
+                    public Uri call(String s) {
+                        return handleBitmap(s);
                     }
                 })
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread());
-        observable.subscribe(new Observer<Uri>() {
-            @Override
-            public void onCompleted() {
+                .compose(RxTransformer.INSTANCE.<Uri>transform(lifeCycleSubject))
+                .doOnSubscribe(new Action0() {
+                    @Override
+                    public void call() {
+                        if (Looper.getMainLooper() == Looper.myLooper()){
+                            Log.d(TAG, "call: -------->这是主线程");
+                        }
+                    }
+                })
+                .subscribe(new Subscriber<Uri>() {
+                    @Override
+                    public void onCompleted() {
+                        dialog.dismiss();
+                    }
 
-            }
+                    @Override
+                    public void onError(Throwable e) {
+                        dialog.dismiss();
+                        Toast.makeText(PhotoActivity.this, "啊哦，下载失败了...", Toast.LENGTH_SHORT).show();
+                    }
 
-            @Override
-            public void onError(Throwable e){
-                Log.e(TAG, "onError: "+ e.toString());
-            }
-
-            @Override
-            public void onNext(Uri uri) {
-                Toast.makeText(PhotoActivity.this, "已报存至"+uri.toString(), Toast.LENGTH_SHORT).show();
-            }
-        });
+                    @Override
+                    public void onNext(Uri uri) {
+                        Toast.makeText(PhotoActivity.this, "已报存至"+uri.toString(), Toast.LENGTH_SHORT).show();
+                    }
+                });
 
     }
 
-    private Uri handleBitmap(Bitmap bitmap) {
+    private Uri handleBitmap(String url) {
 
-        if (bitmap != null) {
-            File appDir = new File(Environment.getExternalStorageDirectory(), "NoBoring");
-            if (!appDir.exists()) {
-                appDir.mkdir();
-            }
-            File file = new File(appDir, title + ".jpg");
-            try {
-                FileOutputStream fos = new FileOutputStream(file);
-                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);
-                fos.flush();
-                fos.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
-            Uri uri = Uri.fromFile(file);
-
-            Intent scannerIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, uri);
-            getApplicationContext().sendBroadcast(scannerIntent);
-
-            return uri;
-        }
-        return null;
-    }
-
-     class GifTask extends AsyncTask<String, Void, File> {
-        private final Context context;
-
-        public GifTask(Context context) {
-            this.context = context;
-        }
-
-        @Override
-        protected File doInBackground(String... params) {
-            String url = params[0]; // should be easy to extend to share multiple images at once
-            try {
-                return Glide
-                        .with(context)
-                        .load(url)
-                        .downloadOnly(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL)
-                        .get();// needs to be called on background thread
-
-            } catch (Exception ex) {
-                return null;
-            }
-        }
-
-        @Override
-        protected void onPostExecute(File result) {
-            if (result == null) {
-                return;
-            }
-            File appDir = new File(Environment.getExternalStorageDirectory(), "NoBoring");
-            if (!appDir.exists()) {
-                appDir.mkdir();
-            }
-            File file = new File(appDir, title + ".gif");
-
-            try {
-                FileUtils.copyFile(result,file);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
-            Uri uri = Uri.fromFile(file);
-            Intent scannerIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, uri);
-            getApplicationContext().sendBroadcast(scannerIntent);
-            ActivityUtils.showSnackBar(findViewById(R.id.container),"已保存"+uri.toString());
+        File result = null;
+        try {
+            result = Glide
+                    .with(PhotoActivity.this)
+                    .load(url)
+                    .downloadOnly(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL)
+                    .get();
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
 
         }
+
+        File appDir = new File(Environment.getExternalStorageDirectory(), "NoBoring");
+        if (!appDir.exists()) {
+            appDir.mkdir();
+        }
+        String name = isGif ? ".gif" : ".jpg";
+        File file = new File(appDir, title + name);
+        try {
+            assert result != null;
+            FileUtils.copyFile(result,file);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        Uri uri = Uri.fromFile(file);
+        Intent scannerIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, uri);
+        getApplicationContext().sendBroadcast(scannerIntent);
+
+//        if (bitmap != null) {
+//            File appDir = new File(Environment.getExternalStorageDirectory(), "NoBoring");
+//            if (!appDir.exists()) {
+//                appDir.mkdir();
+//            }
+//            File file = new File(appDir, title + ".jpg");
+//            try {
+//                FileOutputStream fos = new FileOutputStream(file);
+//                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);
+//                fos.flush();
+//                fos.close();
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//            }
+//
+//            Uri uri = Uri.fromFile(file);
+//
+//            Intent scannerIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, uri);
+//            getApplicationContext().sendBroadcast(scannerIntent);
+
+        return uri;
+
     }
 
 }

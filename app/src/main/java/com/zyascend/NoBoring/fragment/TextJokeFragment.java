@@ -1,197 +1,184 @@
 package com.zyascend.NoBoring.fragment;
 
-import android.graphics.Color;
-
+import android.content.DialogInterface;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.util.Log;
-import android.view.View;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.TextView;
+import android.support.v7.app.AlertDialog;
 
+import com.jude.easyrecyclerview.adapter.RecyclerArrayAdapter;
+import com.zyascend.NoBoring.API;
 import com.zyascend.NoBoring.Constants;
 import com.zyascend.NoBoring.R;
 import com.zyascend.NoBoring.adapter.TextJokeAdapter;
-import com.zyascend.NoBoring.base.BaseAdapter;
-import com.zyascend.NoBoring.base.BaseFragment;
-import com.zyascend.NoBoring.data.Database;
-import com.zyascend.NoBoring.model.TextJokeResult;
-import com.zyascend.NoBoring.utils.ActivityUtils;
-import com.zyascend.NoBoring.utils.RetrofitUtils;
-import com.zyascend.NoBoring.utils.map.MapTextJoke;
+import com.zyascend.NoBoring.base.BaseFlatMap;
 
-import java.text.SimpleDateFormat;
+import com.zyascend.NoBoring.base.BaseRecyclerFragment;
+import com.zyascend.NoBoring.dao.TextJoke;
+import com.zyascend.NoBoring.dao.TextJokeResult;
+import com.zyascend.NoBoring.utils.ActivityUtils;
+import com.zyascend.NoBoring.utils.CacheSubscriber;
+import com.zyascend.NoBoring.utils.DaoUtils;
+import com.zyascend.NoBoring.utils.RetrofitService;
+import com.zyascend.NoBoring.utils.RxTransformer;
+
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
-import butterknife.Bind;
-import rx.Observer;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.internal.util.unsafe.MpmcArrayQueue;
-import rx.plugins.RxJavaErrorHandler;
-import rx.plugins.RxJavaPlugins;
-import rx.schedulers.Schedulers;
+import rx.Observable;
+import rx.Subscriber;
+import rx.functions.Action0;
 
 /**
  *
  * Created by Administrator on 2016/7/16.
  */
-public class TextJokeFragment extends BaseFragment implements SwipeRefreshLayout.OnRefreshListener, BaseAdapter.OnItemClickListener {
+public class TextJokeFragment extends BaseRecyclerFragment<TextJokeAdapter> implements RecyclerArrayAdapter.OnLoadMoreListener
+        , SwipeRefreshLayout.OnRefreshListener {
 
     private static final String TAG = "TAG_TextJokeFragment";
-    @Bind(R.id.recyclerview)
-    RecyclerView recyclerView;
-    @Bind(R.id.swipeRefreshLayout)
-    SwipeRefreshLayout swipeRefreshLayout;
-    @Bind(R.id.iv_error)
-    ImageView errorImage;
-    @Bind(R.id.tv_error)
-    TextView errorTextView;
-
-    private Database mSqlite = Database.getInstance(getActivity());
 
 
-    private TextJokeAdapter adapter = new TextJokeAdapter(getActivity());
-    private LinearLayoutManager mLayoutManager;
-    private int mPage = 1;
-    private List<TextJokeResult.ShowapiResBodyBean.TextJoke> mList = new ArrayList<>();
+    private List<TextJoke> mList = new ArrayList<>();
+    private String page;
+    private API.BudejieApi api;
+    private boolean issRefresh;
 
     @Override
-    protected void initViews() {
-
-        errorImage.setVisibility(View.GONE);
-        errorTextView.setVisibility(View.GONE);
-
-        mLayoutManager = new LinearLayoutManager(getActivity());
-        recyclerView.setLayoutManager(mLayoutManager);
-        recyclerView.setAdapter(adapter);
-        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
-            @Override
-            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
-                super.onScrollStateChanged(recyclerView, newState);
-                if (newState == RecyclerView.SCROLL_STATE_IDLE) {
-                    int lastPosition = mLayoutManager.findLastVisibleItemPosition();
-                    if (lastPosition + 1 == adapter.getItemCount()) {
-                        loadData();
-                    }
-                }
-            }
-        });
-
-        adapter.setOnItemClickListener(this);
-
-        swipeRefreshLayout.setColorSchemeColors(Color.RED,Color.BLUE,Color.GREEN);
-        swipeRefreshLayout.setOnRefreshListener(this);
-        onRefresh();
+    protected TextJokeAdapter initAdapter() {
+        return new TextJokeAdapter(getActivity());
     }
 
+    @Override
+    public void doOnInitViews() {
+        api = RetrofitService.init().createAPI(Constants.BASE_URL_BUDEJIE, API.BudejieApi.class);
+    }
+
+    @Override
+    protected void doOnItemClick(final int position) {
+        AlertDialog dialog = new AlertDialog.Builder(getActivity())
+                .setTitle("选项")
+                .setMessage("分享给朋友？")
+                .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        ActivityUtils.share(getActivity(),mList.get(position).getContent(),mList.get(position).getUrl());
+                    }
+                })
+                .setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                }).create();
+        dialog.show();
+
+    }
 
     private void loadData() {
+        api.getTextJoke(page)
+                .compose(RxTransformer.INSTANCE.<TextJokeResult>transform(lifeCycleSubject))
+                .doOnSubscribe(new Action0() {
+                    @Override
+                    public void call() {
+                        //do sonmething
+                    }
+                })
+                .flatMap(new TextJokeFlatMap())
+                .subscribe(new CacheSubscriber<List<TextJoke>>() {
 
-        /**
-         * TODO
-         * 封装String类型参数
-         */
-        unsubscrible();
-        subscription = RetrofitUtils.getTextJokeApi()
-                .getTextJoke("20",String.valueOf(mPage), Constants.APP_ID,Constants.START_TIME,Constants.APP_SIGN)
-                .map(MapTextJoke.getInstance())
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Observer<List<TextJokeResult.ShowapiResBodyBean.TextJoke>>() {
                     @Override
                     public void onCompleted() {
+                        super.onCompleted();
                         showLoadingComplete();
                     }
 
                     @Override
-                    public void onError(Throwable e) {
-                        if (null != swipeRefreshLayout){
-                            swipeRefreshLayout.setRefreshing(false);
-                        }
-                        mList = mSqlite.getAllJokes();
-                        if (mList != null){
-                            adapter.setList(mList);
-                        }else {
-                            showEorror();
-                        }
-                        Log.d(TAG, "onError: it is : "+e.toString());
+                    protected void onRealError() {
+                        showError();
                     }
 
                     @Override
-                    public void onNext(List<TextJokeResult.ShowapiResBodyBean.TextJoke> textJokes) {
+                    protected List<TextJoke> getFromCache() {
+                        return DaoUtils.getInstance().getTextJokes();
+                    }
 
-                        if (null != swipeRefreshLayout){
-                            swipeRefreshLayout.setRefreshing(false);
-                        }
+                    @Override
+                    public void onNext(List<TextJoke> textJokes) {
 
-                        if (mPage > 1){
-                            mList.addAll(textJokes);
-                        }else {
-                            mList = textJokes;
+                        if (issRefresh){
+                            mList.clear();
+                            adapter.clear();
+                            issRefresh = false;
                         }
-                        Log.d(TAG, "onNext: mlist = "+ mList.size());
-                        adapter.setList(textJokes);
+                        mList.addAll(textJokes);
+                        adapter.addAll(textJokes);
                     }
                 });
-
-        mPage += 1;
-    }
-
-
-//    private String getLatestTime() {
-//        String time = "";
-//        try {
-//          SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
-//          Date curDate = new Date(System.currentTimeMillis());//获取当前时间
-//          time = formatter.format(curDate);
-//        } catch (Exception e) {
-//          e.printStackTrace();
-//          Log.d(TAG, "getLatestTime: 格式化时间出错");
-//        }
-//        return "2015-07-10";
-//    }
-
-    @Override
-    public void onRefresh() {
-        mPage = 1;
-        loadData();
     }
 
     @Override
     public int getLayoutId() {
-        return R.layout.fragment_textjoke;
+        return R.layout.fragment_easy_recycler;
+    }
+
+
+    @Override
+    public void onRefresh() {
+        issRefresh = true;
+        page = "0-20.json";
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                loadData();
+            }
+        }, 500);
     }
 
     @Override
-    protected void showEorror() {
+    public void onLoadMore() {
 
-        if (errorImage != null && errorTextView != null){
-            errorTextView.setVisibility(View.VISIBLE);
-            errorImage.setVisibility(View.VISIBLE);
+        if (mList == null || mList.isEmpty()){
+            return;
         }
 
+        String np = mList.get(mList.size()-1).getNp();
+        page = np + "-20.json";
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                loadData();
+            }
+        }, 500);
     }
 
-    @Override
-    protected void showLoading() {
 
-    }
-    @Override
-    protected void showLoadingComplete() {
-        if (errorImage != null && errorTextView != null){
-            errorImage.setVisibility(View.GONE);
-            errorTextView.setVisibility(View.GONE);
+    private class TextJokeFlatMap extends BaseFlatMap<TextJokeResult,List<TextJoke>> {
+
+        @Override
+        protected List<TextJoke> getFromCache() {
+            return DaoUtils.getInstance().getTextJokes();
         }
 
-    }
+        @Override
+        protected Observable<List<TextJoke>> doForMap(TextJokeResult textJokeResult) {
+            List<TextJoke> textJokes = new ArrayList<>();
+            try {
+                for (TextJokeResult.ListBean list : textJokeResult.getList()){
+                    TextJoke textJoke = new TextJoke(Long.parseLong(list.getId())
+                            ,list.getShare_url()
+                            ,list.getText()
+                            ,String.valueOf(textJokeResult.getInfo().getNp()));
+                    textJokes.add(textJoke);
+                }
 
-    @Override
-    public void onItemClick(int position) {
-        ActivityUtils.shareJokes(getActivity(),mList.get(position).getText());
-    }
+            }catch (Exception e){
+                return Observable.error(e);
+            }
+            return createObservable(textJokes);
+        }
 
+        @Override
+        protected void saveToCache(List<TextJoke> data) {
+            DaoUtils.getInstance().saveTextJokes(data);
+        }
+    }
 }

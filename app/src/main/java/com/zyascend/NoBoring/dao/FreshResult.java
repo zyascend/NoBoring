@@ -1,4 +1,4 @@
-package com.zyascend.NoBoring.model;
+package com.zyascend.NoBoring.dao;
 
 import java.util.List;
 

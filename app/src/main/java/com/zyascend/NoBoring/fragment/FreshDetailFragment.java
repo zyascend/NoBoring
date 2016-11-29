@@ -1,15 +1,12 @@
 package com.zyascend.NoBoring.fragment;
 
-import android.app.Activity;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.widget.NestedScrollView;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewConfiguration;
-import android.view.ViewGroup;
 import android.webkit.WebResourceError;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebView;
@@ -22,18 +19,13 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.zyascend.NoBoring.R;
 import com.zyascend.NoBoring.base.BaseFragment;
-import com.zyascend.NoBoring.model.FreshContent;
-import com.zyascend.NoBoring.model.Item;
+import com.zyascend.NoBoring.dao.Fresh;
 import com.zyascend.NoBoring.utils.ActivityUtils;
-import com.zyascend.NoBoring.utils.RetrofitUtils;
 
 import butterknife.Bind;
-import butterknife.ButterKnife;
-import rx.Observer;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
 
 /**
+ *
  * Created by Administrator on 2016/8/16.
  */
 public class FreshDetailFragment extends BaseFragment implements View.OnClickListener
@@ -58,11 +50,11 @@ public class FreshDetailFragment extends BaseFragment implements View.OnClickLis
     @Bind(R.id.titleImage)
     ImageView titleImage;
 
-    private Item mItem;
+    private Fresh mItem;
     private int mFreshId;
     private String mContent;
 
-    public static FreshDetailFragment getInstance(Item item) {
+    public static FreshDetailFragment getInstance(Fresh item) {
         FreshDetailFragment fragment = new FreshDetailFragment();
         Bundle bundle = new Bundle();
         bundle.putParcelable(FRESH_BUNDLE, item);
@@ -93,7 +85,7 @@ public class FreshDetailFragment extends BaseFragment implements View.OnClickLis
             @Override
             public void onReceivedError(WebView view, WebResourceRequest request, WebResourceError error) {
                 super.onReceivedError(view, request, error);
-                showEorror();
+                showError();
             }
         });
         nestedscrollView.setOnScrollChangeListener(this);
@@ -105,17 +97,17 @@ public class FreshDetailFragment extends BaseFragment implements View.OnClickLis
             title.setText(mItem.getTitle());
             author.setText(mItem.getAuthor());
             tag.setText(mItem.getTag());
-            mFreshId = mItem.getId();
+            mFreshId = (int) mItem.getId();
         }
 
-        loadContent(mFreshId);
+//        loadContent(mFreshId);
 
     }
 
     private void loadPic() {
 
         Glide.with(getActivity())
-                .load(mItem.getUrl())
+                .load(mItem.getThumbUrl())
                 .asBitmap()
                 .placeholder(R.drawable.splash_back)
                 .diskCacheStrategy(DiskCacheStrategy.SOURCE)
@@ -132,50 +124,50 @@ public class FreshDetailFragment extends BaseFragment implements View.OnClickLis
         });
     }
 
-    private void loadContent(int mFreshId) {
-        /**
-         * Loading布局开始加载
-         */
-        unsubscrible();
-        subscription = RetrofitUtils.getContentApi()
-                .getFreshContent("get_post",String.valueOf(mFreshId),"content")
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Observer<FreshContent>() {
-                    @Override
-                    public void onCompleted() {
-                        loadContentToWebView();
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        /**
-                         * 显示加载出错的布局
-                         */
-                        showEorror();
-                    }
-
-                    @Override
-                    public void onNext(FreshContent freshContent) {
-                        if (freshContent == null){
-                            Log.d(TAG, "onNext: fresh nuuuuuu");
-                        }else {
-                            if (freshContent.getPost() == null){
-                                Log.d(TAG, "onNext: post nulll");
-                            }else {
-                                if (freshContent.getPost().getContent() == null){
-                                    Log.d(TAG, "onNext: content null");
-                                }else {
-                                    mContent = freshContent.getPost().getContent();
-                                }
-                            }
-
-                        }
+//    private void loadContent(int mFreshId) {
+//        /**
+//         * Loading布局开始加载
+//         */
+//        unsubscrible();
+//        subscription = RetrofitUtils.getContentApi()
+//                .getFreshContent("get_post",String.valueOf(mFreshId),"content")
+//                .subscribeOn(Schedulers.io())
+//                .observeOn(AndroidSchedulers.mainThread())
+//                .subscribe(new Observer<FreshContent>() {
+//                    @Override
+//                    public void onCompleted() {
+//                        loadContentToWebView();
+//                    }
 //
+//                    @Override
+//                    public void onError(Throwable e) {
+//                        /**
+//                         * 显示加载出错的布局
+//                         */
+//                        showError();
+//                    }
 //
-                    }
-                });
-    }
+//                    @Override
+//                    public void onNext(FreshContent freshContent) {
+//                        if (freshContent == null){
+//                            Log.d(TAG, "onNext: fresh nuuuuuu");
+//                        }else {
+//                            if (freshContent.getPost() == null){
+//                                Log.d(TAG, "onNext: post nulll");
+//                            }else {
+//                                if (freshContent.getPost().getContent() == null){
+//                                    Log.d(TAG, "onNext: content null");
+//                                }else {
+//                                    mContent = freshContent.getPost().getContent();
+//                                }
+//                            }
+//
+//                        }
+////
+////
+//                    }
+//                });
+//    }
 
     private void loadContentToWebView() {
 
@@ -198,7 +190,7 @@ public class FreshDetailFragment extends BaseFragment implements View.OnClickLis
     }
 
     @Override
-    protected void showEorror() {
+    protected void showError() {
         webView.setVisibility(View.INVISIBLE);
         progressBar.setVisibility(View.GONE);
         ActivityUtils.showSnackBar(nestedscrollView,getString(R.string.laodingError));
@@ -220,6 +212,11 @@ public class FreshDetailFragment extends BaseFragment implements View.OnClickLis
     public void onStop() {
         super.onStop();
         webView.onPause();
+    }
+
+    @Override
+    protected void lazyLoad() {
+
     }
 
     @Override

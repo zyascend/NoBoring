@@ -15,8 +15,10 @@ import android.view.WindowManager;
 
 import com.squareup.leakcanary.RefWatcher;
 import com.zyascend.NoBoring.R;
+import com.zyascend.NoBoring.utils.LifeCycleEvent;
 
 import butterknife.ButterKnife;
+import rx.subjects.PublishSubject;
 
 /**
  * Created by Administrator on 2016/7/13.
@@ -28,10 +30,10 @@ public abstract class BaseActivity extends AppCompatActivity {
     private BaseApplication mApplication;
     private boolean mIsAddedView;
     private View mNightView;
-
+    public final PublishSubject<LifeCycleEvent> lifeCycleSubject = PublishSubject.create();
     private WindowManager.LayoutParams mNightViewParam;
     private WindowManager mWindowManager;
-
+    public Bundle saveState;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -42,8 +44,9 @@ public abstract class BaseActivity extends AppCompatActivity {
         }else {
             setTheme(R.style.AppTheme_day);
         }
-
+        lifeCycleSubject.onNext(LifeCycleEvent.CREATE);
         super.onCreate(savedInstanceState);
+        saveState = savedInstanceState;
         setContentView(getLayoutId());
         ButterKnife.bind(this);
         mIsAddedView = false;
@@ -90,7 +93,6 @@ public abstract class BaseActivity extends AppCompatActivity {
         setSupportActionBar(mToolbar);
         ActionBar ab = getSupportActionBar();
         if (ab != null) {
-
             ab.setDisplayHomeAsUpEnabled(true);
             ab.setDisplayShowHomeEnabled(true);
         }else{
@@ -137,11 +139,31 @@ public abstract class BaseActivity extends AppCompatActivity {
             mNightView = null;
         }
 
+        lifeCycleSubject.onNext(LifeCycleEvent.DESTROY);
         RefWatcher refWatcher = BaseApplication.getRefWatcher(this);
         refWatcher.watch(this);
 
         super.onDestroy();
     }
+
+    @Override
+    protected void onStop() {
+        lifeCycleSubject.onNext(LifeCycleEvent.STOP);
+        super.onStop();
+    }
+
+    @Override
+    protected void onPause() {
+        lifeCycleSubject.onNext(LifeCycleEvent.PAUSE);
+        super.onPause();
+    }
+
+    @Override
+    protected void onResume() {
+        lifeCycleSubject.onNext(LifeCycleEvent.RESUME);
+        super.onResume();
+    }
+
 
     protected abstract void initView();
 

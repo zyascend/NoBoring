@@ -21,7 +21,6 @@ public class BaseApplication extends Application {
         super.onCreate();
         context = this;
         isNight = SPUtils.getBoolean(SPUtils.SP_KEY_NIGHT,false,this);
-
         refWatcher = LeakCanary.install(this);
 
     }

@@ -24,9 +24,9 @@
     <string name="noPic">无图模式</string>
     <string name="nightMode">夜间模式</string>
     <string name="noboring">NoBoring</string>
-    <string name="version">V 1.0.0</string>
+    <string name="version">V 2.0.0</string>
     <string name="laodingError">加载出错了⊙︿⊙</string>
-    <string name="error_retry">加载出错了0_0,请下拉重试</string>
+    <string name="error_retry">加载出错了0_0,请点击重试</string>
     <string name="share">分享</string>
     <string name="save">保存</string>
     <string name="chucuo">出错了( ＞ω＜)</string>

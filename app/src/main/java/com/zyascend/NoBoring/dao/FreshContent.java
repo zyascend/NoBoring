@@ -1,4 +1,4 @@
-package com.zyascend.NoBoring.model;
+package com.zyascend.NoBoring.dao;
 
 /**
  * Created by Administrator on 2016/8/16.

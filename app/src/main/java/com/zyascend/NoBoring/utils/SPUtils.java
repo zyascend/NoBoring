@@ -7,6 +7,7 @@ import android.widget.CompoundButton;
 import com.zyascend.NoBoring.activity.MainActivity;
 
 /**
+ *
  * Created by Administrator on 2016/8/9.
  */
 public class SPUtils {

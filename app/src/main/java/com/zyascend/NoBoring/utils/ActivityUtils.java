@@ -5,18 +5,16 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.os.Parcelable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
-import android.util.Log;
+import android.text.TextUtils;
 import android.view.View;
 
-import com.zyascend.NoBoring.Constants;
-import com.zyascend.NoBoring.activity.AboutActivity;
-import com.zyascend.NoBoring.activity.DetailActivity;
 import com.zyascend.NoBoring.base.BaseApplication;
-import com.zyascend.NoBoring.model.Item;
+import com.zyascend.NoBoring.dao.Fresh;
 
 import java.util.List;
 
@@ -31,21 +29,9 @@ public class ActivityUtils {
 
         FragmentTransaction transaction = manager.beginTransaction();
         transaction.replace(frameId,fragment);
-//        transaction.add(frameId,fragment_girl);
         transaction.commit();
     }
 
-
-    public static void startActivityForDetail(
-            Context context, Item item,String tag) {
-
-        Intent intent  = new Intent(context, DetailActivity.class);
-
-        intent.putExtra(DetailActivity.DETAIL_ITEM,item);
-        intent.putExtra(DetailActivity.DETAIL_TAG,tag);
-
-        context.startActivity(intent);
-    }
 
     public static void jumpTo(Context context, Class<?> activity){
         Intent intent  = new Intent(context, activity);
@@ -100,5 +86,13 @@ public class ActivityUtils {
         sb.append(" 』");
         sb.append("   ――来自【不许无聊】APP的分享――  ");
 
+    }
+
+
+    public static boolean isGif(String picUrl) {
+        if (!TextUtils.isEmpty(picUrl) && picUrl.contains("gif")){
+            return true;
+        }
+        return false;
     }
 }

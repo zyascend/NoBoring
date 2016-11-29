@@ -15,7 +15,7 @@ import android.widget.ProgressBar;
 
 import com.zyascend.NoBoring.R;
 import com.zyascend.NoBoring.base.BaseFragment;
-import com.zyascend.NoBoring.model.Item;
+import com.zyascend.NoBoring.dao.Fresh;
 import com.zyascend.NoBoring.utils.ActivityUtils;
 
 import butterknife.Bind;
@@ -41,9 +41,9 @@ public class WeiXinDetailFragment extends BaseFragment implements NestedScrollVi
 
 
 
-    private Item mItem;
+    private Fresh mItem;
 
-    public static WeiXinDetailFragment getInstance(Item item) {
+    public static WeiXinDetailFragment getInstance(Fresh item) {
         WeiXinDetailFragment fragment = new WeiXinDetailFragment();
         Bundle bundle = new Bundle();
         bundle.putParcelable(WEIXIN_BUNDLE, item);
@@ -72,15 +72,15 @@ public class WeiXinDetailFragment extends BaseFragment implements NestedScrollVi
             @Override
             public void onReceivedError(WebView view, WebResourceRequest request, WebResourceError error) {
                 super.onReceivedError(view, request, error);
-                showEorror();
+                showError();
             }
         });
         nestedScrollview.setOnScrollChangeListener(this);
         fab.setOnClickListener(this);
         hideFab();
         if (mItem != null) {
-            Log.d(TAG, " url = " + mItem.getUrl());
-            webView.loadUrl(mItem.getUrl());
+            Log.d(TAG, " url = " + mItem.getThumbUrl());
+            webView.loadUrl(mItem.getThumbUrl());
             /**
              * 设置Loading布局
              */
@@ -102,7 +102,7 @@ public class WeiXinDetailFragment extends BaseFragment implements NestedScrollVi
     }
 
     @Override
-    protected void showEorror() {
+    protected void showError() {
         webView.setVisibility(View.INVISIBLE);
         progressBar.setVisibility(View.GONE);
         ActivityUtils.showSnackBar(nestedScrollview,getString(R.string.laodingError));
@@ -125,6 +125,11 @@ public class WeiXinDetailFragment extends BaseFragment implements NestedScrollVi
     public void onStop() {
         super.onStop();
         webView.onPause();
+    }
+
+    @Override
+    protected void lazyLoad() {
+
     }
 
     @Override

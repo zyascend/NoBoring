@@ -1,4 +1,4 @@
-package com.zyascend.NoBoring.model;
+package com.zyascend.NoBoring.dao;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -13,9 +13,4 @@ public class GirlResult {
     public boolean error;
     public @SerializedName("results") List<Girl> girls;
 
-    public static class Girl {
-        public String createdAt;
-        public String url;
-        public String desc;
-    }
 }

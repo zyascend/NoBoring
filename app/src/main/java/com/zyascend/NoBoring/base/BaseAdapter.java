@@ -3,10 +3,9 @@ package com.zyascend.NoBoring.base;
 import android.support.v7.widget.RecyclerView;
 import android.view.ViewGroup;
 
-import com.zyascend.NoBoring.model.Item;
-
 /**
- * Created by Administrator on 2016/7/17.
+ *
+ * Created by zyascend on 2016/7/17.
  */
 public abstract class BaseAdapter extends RecyclerView.Adapter {
 

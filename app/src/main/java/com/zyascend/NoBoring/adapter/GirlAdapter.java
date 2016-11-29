@@ -9,8 +9,8 @@ import android.widget.ImageView;
 import com.jude.easyrecyclerview.adapter.BaseViewHolder;
 import com.jude.easyrecyclerview.adapter.RecyclerArrayAdapter;
 import com.zyascend.NoBoring.R;
-import com.zyascend.NoBoring.data.Database;
-import com.zyascend.NoBoring.model.GirlResult;
+import com.zyascend.NoBoring.dao.Girl;
+import com.zyascend.NoBoring.dao.GirlResult;
 import com.zyascend.NoBoring.utils.LruCacheUtils;
 
 
@@ -18,39 +18,33 @@ import com.zyascend.NoBoring.utils.LruCacheUtils;
  *
  * Created by Administrator on 2016/7/19.
  */
-public class GirlAdapter extends RecyclerArrayAdapter<GirlResult.Girl> {
+public class GirlAdapter extends RecyclerArrayAdapter<Girl> {
     private static final String TAG = "TAG_GirlAdapter";
-    private final Database mSqlite;
     private Context mContext;
     public GirlAdapter(Context context) {
         super(context);
         mContext = context;
-        mSqlite = Database.getInstance(mContext);
     }
 
     @Override
     public BaseViewHolder OnCreateViewHolder(ViewGroup parent, int viewType) {
-        return new GrilViewHolder(parent);
+        return new GirlViewHolder(parent);
     }
 
-    class GrilViewHolder extends BaseViewHolder<GirlResult.Girl> {
+    private class GirlViewHolder extends BaseViewHolder<Girl> {
 
         private ImageView image;
 
-        public GrilViewHolder(ViewGroup parent) {
+        GirlViewHolder(ViewGroup parent) {
             super(parent, R.layout.item_girl);
             image = $(R.id.image);
         }
 
         @Override
-        public void setData(final GirlResult.Girl data) {
+        public void setData(final Girl data) {
             super.setData(data);
 
-            final String url = data.url;
-
-            if (mSqlite.getGirl(url) == null){
-                mSqlite.addGirls(data);
-            }
+            final String url = data.getUrl();
 
             Bitmap bitmap = LruCacheUtils.getInstance().getBitmapFromMemCache(url);
             if (bitmap != null){

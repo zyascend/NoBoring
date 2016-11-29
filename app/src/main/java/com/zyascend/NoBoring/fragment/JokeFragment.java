@@ -1,21 +1,15 @@
 package com.zyascend.NoBoring.fragment;
 
-import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
 
 import com.zyascend.NoBoring.R;
 import com.zyascend.NoBoring.base.BaseFragment;
 
 import butterknife.Bind;
-import butterknife.ButterKnife;
 
 /**
  *
@@ -35,7 +29,7 @@ public class JokeFragment extends BaseFragment {
     }
 
     @Override
-    protected void showEorror() {
+    protected void showError() {
 
     }
 
@@ -46,6 +40,11 @@ public class JokeFragment extends BaseFragment {
 
     @Override
     protected void showLoadingComplete() {
+
+    }
+
+    @Override
+    protected void lazyLoad() {
 
     }
 
@@ -64,7 +63,7 @@ public class JokeFragment extends BaseFragment {
                     case 0:
                         return new TextJokeFragment();
                     case 1:
-                        return new DongJokeFragment();
+                        return new TuWenFragment();
                     default:
                         return new TextJokeFragment();
                 }
