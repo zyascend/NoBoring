@@ -12,7 +12,9 @@ import android.view.animation.ScaleAnimation;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.zyascend.NoBoring.R;
+import com.zyascend.NoBoring.utils.DaoUtils;
 
 /**
  *
@@ -53,9 +55,19 @@ public class SplashActivity extends AppCompatActivity {
 
     private void initView() {
         mImageView = (ImageView) findViewById(R.id.iv_splash);
+        loadPic();
         des = (TextView) findViewById(R.id.tv_des);
         Typeface typeFace = Typeface.createFromAsset(getAssets(),"NotoSansHans-Light.ttf");
         des.setTypeface(typeFace);
+    }
+
+
+
+    private void loadPic() {
+        Glide.with(this)
+                .load(DaoUtils.getInstance().getEntranceUrl())
+                .error(R.drawable.splash_back)
+                .into(mImageView);
     }
 
     private void animateImage() {

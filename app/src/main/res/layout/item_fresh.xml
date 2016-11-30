@@ -1,14 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/cv_item"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    style="@style/NormalCard">
 
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="90dp">
+
+<RelativeLayout android:layout_width="match_parent"
+    android:layout_height="90dp"
+    android:layout_marginTop="4dp"
+    android:background="?cardBackground"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
         <ImageView
             android:layout_marginStart="10dp"
             android:layout_marginTop="10dp"
@@ -33,4 +31,3 @@
             android:textSize="15sp"
             tools:text="新闻标题新闻标题新闻标题新闻标题新闻标题新闻标题,tttttttt" />
     </RelativeLayout>
-</android.support.v7.widget.CardView>

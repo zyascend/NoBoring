@@ -20,6 +20,7 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 
 /**
+ *
  * Created by zyascend on 2016/7/16.
  */
 public class TuWenAdapter extends RecyclerArrayAdapter<TuWenJoke> {
@@ -112,6 +113,8 @@ public class TuWenAdapter extends RecyclerArrayAdapter<TuWenJoke> {
             if (data == null) {
                 return;
             }
+
+
 
             if (TextUtils.equals(data.getTime(),"gif")){
                 gif.setVisibility(View.VISIBLE);
