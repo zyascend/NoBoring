@@ -29,7 +29,7 @@ public abstract class BaseActivity extends AppCompatActivity {
     protected Toolbar mToolbar;
     private BaseApplication mApplication;
     private boolean mIsAddedView;
-    private View mNightView;
+//    private View mNightView;
     public final PublishSubject<LifeCycleEvent> lifeCycleSubject = PublishSubject.create();
     private WindowManager.LayoutParams mNightViewParam;
     private WindowManager mWindowManager;
@@ -51,10 +51,10 @@ public abstract class BaseActivity extends AppCompatActivity {
         ButterKnife.bind(this);
         mIsAddedView = false;
 
-        if (mApplication.isNight()) {
-            initNightView();
-            mNightView.setBackgroundResource(R.color.night_mask);
-        }
+//        if (mApplication.isNight()) {
+//            initNightView();
+//            mNightView.setBackgroundResource(R.color.night_mask);
+//        }
 
         setToolBar();
         initView();
@@ -62,13 +62,13 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     public void ChangeToDay() {
         mApplication.setIsNight(false);
-        mNightView.setBackgroundResource(android.R.color.transparent);
+//        mNightView.setBackgroundResource(android.R.color.transparent);
     }
 
     public void ChangeToNight() {
         mApplication.setIsNight(true);
         initNightView();
-        mNightView.setBackgroundResource(R.color.night_mask);
+//        mNightView.setBackgroundResource(R.color.night_mask);
     }
 
     private void initNightView() {
@@ -81,8 +81,8 @@ public abstract class BaseActivity extends AppCompatActivity {
                 PixelFormat.TRANSPARENT);
 
         mWindowManager = (WindowManager) getSystemService(Context.WINDOW_SERVICE);
-        mNightView = new View(this);
-        mWindowManager.addView(mNightView, mNightViewParam);
+//        mNightView = new View(this);
+//        mWindowManager.addView(mNightView, mNightViewParam);
         mIsAddedView = true;
 
     }
@@ -134,9 +134,9 @@ public abstract class BaseActivity extends AppCompatActivity {
 
         if (mIsAddedView) {
             mApplication = null;
-            mWindowManager.removeViewImmediate(mNightView);
+//            mWindowManager.removeViewImmediate(mNightView);
             mWindowManager = null;
-            mNightView = null;
+//            mNightView = null;
         }
 
         lifeCycleSubject.onNext(LifeCycleEvent.DESTROY);

@@ -1,11 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <attr name="containerBackground" format="reference|color"></attr>
-    <attr name="cardBackground" format="reference|color"></attr>
-    <attr name="titleColor" format="reference|color"></attr>
-    <attr name="textColor" format="reference|color"></attr>
-    <attr name="selectorBtn" format="reference"></attr>
-    <attr name="tabColor" format="reference"></attr>
-    <attr name="selectorListItem" format="reference"></attr>
-    <attr name="headerImage" format="reference"></attr>
+    <attr name="containerBackground" format="reference|color"/>
+    <attr name="cardBackground" format="reference|color"/>
+    <attr name="titleColor" format="reference|color"/>
+    <attr name="textColor" format="reference|color"/>
+    <attr name="selectorBtn" format="reference"/>
+    <attr name="tabColor" format="reference"/>
+    <attr name="selectorListItem" format="reference"/>
+    <attr name="headerImage" format="reference"/>
+    <attr name="bottomInActive" format="reference"/>
+    <attr name="bottomActive" format="reference"/>
+    <attr name="bottomBackground" format="reference"/>
+
+
 </resources>

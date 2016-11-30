@@ -23,11 +23,9 @@ import com.zyascend.NoBoring.R;
 import com.zyascend.NoBoring.base.BaseActivity;
 import com.zyascend.NoBoring.fragment.DuanziFragment;
 import com.zyascend.NoBoring.fragment.GirlFragment;
-import com.zyascend.NoBoring.fragment.JokeFragment;
 import com.zyascend.NoBoring.fragment.QuwenFragment;
 import com.zyascend.NoBoring.fragment.ShiPinFragment;
-import com.zyascend.NoBoring.fragment.WeiXinFragment;
-import com.zyascend.NoBoring.utils.ActivityUtils;
+
 import com.zyascend.NoBoring.utils.CacheCleanUtils;
 import com.zyascend.NoBoring.utils.rxbus.DateEvent;
 import com.zyascend.NoBoring.utils.rxbus.NextEvent;
@@ -140,6 +138,7 @@ public class MainActivity extends BaseActivity
 
     @Override
     public void onBackPressed() {
+
         if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
             drawerLayout.closeDrawer(GravityCompat.START);
         }
@@ -181,9 +180,7 @@ public class MainActivity extends BaseActivity
     public boolean onNavigationItemSelected(MenuItem item) {
 
         switch (item.getItemId()) {
-            case R.id.menu_change_theme:
-                changeTheme();
-                break;
+
             case R.id.menu_cache:
                 CacheCleanUtils.getInstance().clearAllCache();
                 setCacheText();
@@ -208,10 +205,6 @@ public class MainActivity extends BaseActivity
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }
-
-    private void changeTheme() {
-
     }
 
 

@@ -1,13 +1,16 @@
 package com.zyascend.NoBoring.activity;
 
 import android.content.Intent;
+import android.graphics.Typeface;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.ScaleAnimation;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.zyascend.NoBoring.R;
 
@@ -18,6 +21,7 @@ import com.zyascend.NoBoring.R;
 public class SplashActivity extends AppCompatActivity {
 
     private ImageView mImageView;
+    private TextView des;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -26,6 +30,7 @@ public class SplashActivity extends AppCompatActivity {
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.ativity_splash);
+
         initView();
     }
 
@@ -34,12 +39,23 @@ public class SplashActivity extends AppCompatActivity {
         if (!hasFocus) {
             return;
         }
-        animateImage();
+//        animateImage();
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                startActivity(new Intent(SplashActivity.this, MainActivity.class));
+                overridePendingTransition(0, 0);
+                SplashActivity.this.finish();
+            }
+        },1500);
         super.onWindowFocusChanged(hasFocus);
     }
 
     private void initView() {
         mImageView = (ImageView) findViewById(R.id.iv_splash);
+        des = (TextView) findViewById(R.id.tv_des);
+        Typeface typeFace = Typeface.createFromAsset(getAssets(),"NotoSansHans-Light.ttf");
+        des.setTypeface(typeFace);
     }
 
     private void animateImage() {

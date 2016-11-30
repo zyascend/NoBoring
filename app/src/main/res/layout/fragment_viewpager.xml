@@ -12,12 +12,12 @@
             android:id="@+id/tabLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/colorPrimary"
+            android:background="?attr/colorPrimary"
             app:tabGravity="fill"
             app:tabMode="fixed"
-            app:tabIndicatorColor="@color/material_orange"
-            app:tabSelectedTextColor="@color/material_orange"
-            app:tabTextColor="#ffffff" />
+            app:tabIndicatorColor="?tabColor"
+            app:tabSelectedTextColor="@color/white"
+            app:tabTextColor="?textColor" />
     </android.support.design.widget.AppBarLayout>
 
 

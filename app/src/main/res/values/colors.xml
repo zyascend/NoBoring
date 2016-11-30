@@ -1,28 +1,41 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <color name="colorPrimary">#4FAE4B</color>
-    <color name="colorPrimaryDark">#4FAE4B</color>
-    <color name="colorAccent">#4FAE4B</color>
+    <color name="colorPrimary_day">#4FAE4B</color>
+    <color name="colorPrimaryDark_day">#4FAE4B</color>
+    <color name="colorAccent_day">#4FAE4B</color>
+
+    <color name="colorPrimary_night">#263238</color>
+    <color name="colorPrimaryDark_night">#263238</color>
+    <color name="colorAccent_night">#263238</color>
 
 
     <!--<color name="night_mask">@android:color/transparent</color>-->
     <color name="night_mask">#90000000</color>
 
-    <color name="background_day">#F4EEEA</color>
-    <color name="background_night">#302B21</color>
+    <color name="background_day">#F2F4F7</color>
+    <color name="background_night">#212B30</color>
 
-    <color name="card_night">#4F4737</color>
+    <color name="card_night">#37474F</color>
     <color name="card_day">#ffffff</color>
 
-    <color name="text_night">#AEAAA2</color>
-    <color name="text_day">#8f8f8f</color>
+    <color name="text_night">#A3ABAE</color>
+    <color name="text_day">#333333</color>
 
     <color name="title_night">#E8E7E5</color>
-    <color name="title_day">#2A2A2A</color>
+    <color name="title_day">#212121</color>
 
-    <color name="tab_night">@color/material_orange</color>
+    <color name="tab_night">@color/title_day</color>
     <color name="tab_day">@color/material_blue</color>
+
+    <color name="bottomBackground_day">#ffffff</color>
+    <color name="bottomBackground_night">@color/background_night</color>
+
+    <color name="bottomActive_day">@color/colorPrimary_day</color>
+    <color name="bottomActive_night">@color/material_blue</color>
+
+    <color name="bottomInActive_day">@color/text_day</color>
+    <color name="bottomInActive_night">@color/card_night</color>
 
     <color name="material_blue">#2196F3</color>
     <color name="material_light_blue">#03A9F4</color>

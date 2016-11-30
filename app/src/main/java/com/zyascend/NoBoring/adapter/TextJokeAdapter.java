@@ -1,6 +1,7 @@
 package com.zyascend.NoBoring.adapter;
 
 import android.content.Context;
+import android.graphics.Typeface;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,8 +22,12 @@ import butterknife.ButterKnife;
  */
 public class TextJokeAdapter extends RecyclerArrayAdapter<TextJoke> {
 
+//    private Typeface typeFace;
+
     public TextJokeAdapter(Context context) {
         super(context);
+//        typeFace = Typeface.createFromAsset(context.getAssets(),"NotoSansHans-Light.ttf");
+
     }
 
     @Override

@@ -47,9 +47,11 @@ public class FlatMapBudejieVideo extends BaseFlatMap<BudejieVideoResult,List<Bud
         try {
             for (BudejieVideoResult.ListBean list : budejieVideoResult.getList()) {
 
-                if (TextUtils.equals(list.getType(),"gif")){
+                if (TextUtils.equals(list.getType(),"gif")
+                        || list.getVideo() == null){
                     continue;
                 }
+
                 BudejieVideo video = new BudejieVideo(
                         Long.parseLong(list.getId())
                         ,list.getShare_url()

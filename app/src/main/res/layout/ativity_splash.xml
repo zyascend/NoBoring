@@ -1,49 +1,63 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    android:orientation="vertical"
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    >
+    android:layout_height="match_parent">
 
     <ImageView
         android:id="@+id/iv_splash"
         android:src="@drawable/splash_back"
         android:scaleType="centerCrop"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_weight="5"
+        android:layout_height="0dp"/>
 
-    <TextView
-        android:id="@+id/app_name"
-        android:textSize="30sp"
-        android:textColor="#FFFFFF"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/noboring"
-        android:fontFamily="sans-serif-thin"
-        android:layout_marginStart="48dp"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentStart="true"
-        android:layout_marginTop="119dp" />
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_weight="1"
+        android:layout_height="0dp">
+        <!--android:fontFamily="sans-serif-thin"-->
 
-    <TextView
-        android:fontFamily="sans-serif-thin"
-        android:textSize="12sp"
-        android:textColor="#ffffff"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/version"
-        android:layout_alignBottom="@+id/app_name"
-        android:layout_toEndOf="@+id/app_name"
-        android:layout_marginStart="18dp"
-        android:id="@+id/textView" />
+        <ImageView
+            android:src="@mipmap/launcher"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="100dp"
+            android:id="@+id/imageView"
+            android:layout_centerVertical="true"
+            android:layout_alignParentStart="true" />
 
-    <TextView
-        android:textSize="20sp"
-        android:textColor="#ffffff"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/app_des"
-        android:fontFamily="sans-serif-thin"
-        android:layout_marginTop="35dp"
-        android:layout_below="@+id/app_name"
-        android:layout_toStartOf="@+id/textView" />
-</RelativeLayout>
+        <!--<TextView-->
+            <!--android:textColor="@color/material_blue_gray"-->
+            <!--android:textSize="13sp"-->
+            <!--android:text="@string/app_des"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_alignBottom="@+id/imageView"-->
+            <!--android:layout_alignStart="@+id/textView" />-->
+
+        <!--<TextView-->
+            <!--android:id="@+id/textView"-->
+            <!--android:textColor="#000000"-->
+            <!--android:textSize="15sp"-->
+            <!--android:textStyle="bold"-->
+            <!--android:text="@string/app_name"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_marginStart="15dp"-->
+            <!--android:layout_alignTop="@+id/imageView"-->
+            <!--android:layout_toEndOf="@+id/imageView" />-->
+
+        <TextView
+            android:id="@+id/tv_des"
+            android:textColor="#000000"
+            android:textSize="17sp"
+            android:text="@string/app_des"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_toEndOf="@+id/imageView"
+            android:layout_marginStart="17dp" />
+    </RelativeLayout>
+</LinearLayout>

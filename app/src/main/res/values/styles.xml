@@ -3,11 +3,10 @@
     <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
         <!-- Customize your theme here. -->
-        <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
-        <item name="colorAccent">@color/colorAccent</item>
+        <item name="colorPrimary">@color/colorPrimary_day</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark_day</item>
+        <item name="colorAccent">@color/colorAccent_day</item>
     </style>
-
 
     <style name="AppTheme.NoActionBar">
         <item name="windowActionBar">false</item>
@@ -16,16 +15,29 @@
 
     <!-- 日间模式 -->
     <style name="AppTheme.day" parent="AppTheme.NoActionBar">
+        <item name="colorPrimary">@color/colorPrimary_day</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark_day</item>
+        <item name="colorAccent">@color/colorAccent_day</item>
         <item name="containerBackground">@color/background_day</item>
         <item name="titleColor">@color/title_day</item>
         <item name="textColor">@color/text_day</item>
         <item name="cardBackground">@color/card_day</item>
         <item name="tabColor">@color/tab_day</item>
         <item name="headerImage">@drawable/drawer_day</item>
+        <item name="bottomInActive">@color/bottomInActive_day</item>
+        <item name="bottomActive">@color/bottomActive_day</item>
+        <item name="bottomBackground">@color/bottomBackground_day</item>
     </style>
     
     <!-- 夜间模式 -->
     <style name="AppTheme.night" parent="AppTheme.NoActionBar">
+
+        <item name="bottomInActive">@color/bottomInActive_night</item>
+        <item name="bottomActive">@color/bottomActive_night</item>
+        <item name="bottomBackground">@color/bottomBackground_night</item>
+        <item name="colorPrimary">@color/colorPrimary_night</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark_night</item>
+        <item name="colorAccent">@color/colorAccent_night</item>
         <item name="containerBackground">@color/background_night</item>
         <item name="titleColor">@color/title_night</item>
         <item name="textColor">@color/text_night</item>
