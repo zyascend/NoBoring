@@ -42,7 +42,7 @@ public class FlatMapBudejieVideo extends BaseFlatMap<BudejieVideoResult,List<Bud
 
     @Override
     protected Observable<List<BudejieVideo>> doForMap(BudejieVideoResult budejieVideoResult) {
-
+        Log.d(TAG, "doForMap: np = "+ budejieVideoResult.getInfo().getNp());
         List<BudejieVideo> budejieVideos = new ArrayList<>();
         try {
             for (BudejieVideoResult.ListBean list : budejieVideoResult.getList()) {
