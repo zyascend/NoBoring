@@ -30,4 +30,4 @@
             android:maxLines="2"
             android:textSize="15sp"
             tools:text="新闻标题新闻标题新闻标题新闻标题新闻标题新闻标题,tttttttt" />
-    </RelativeLayout>
+</RelativeLayout>

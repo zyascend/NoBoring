@@ -51,4 +51,9 @@ dependencies {
     compile 'fm.jiecao:jiecaovideoplayer:4.8.3'
     compile 'com.davemorrissey.labs:subsampling-scale-image-view:3.6.0'
 
+    // LeanCloud 基础包
+    compile ('cn.leancloud.android:avoscloud-sdk:v3.+')
+// LeanCloud 统计包
+    compile ('cn.leancloud.android:avoscloud-statistics:v3.+')
+    compile 'com.google.android.gms:play-services-appindexing:8.4.0'
 }

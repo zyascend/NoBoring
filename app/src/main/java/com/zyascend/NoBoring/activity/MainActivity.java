@@ -2,6 +2,8 @@ package com.zyascend.NoBoring.activity;
 
 
 import android.content.Intent;
+import android.net.Uri;
+import android.os.Bundle;
 import android.support.annotation.IdRes;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -9,36 +11,52 @@ import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.SwitchCompat;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.CompoundButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.avos.avoscloud.AVUser;
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.google.android.gms.appindexing.Action;
+import com.google.android.gms.appindexing.AppIndex;
+import com.google.android.gms.appindexing.Thing;
+import com.google.android.gms.common.api.GoogleApiClient;
 import com.roughike.bottombar.BottomBar;
 import com.roughike.bottombar.OnTabReselectListener;
 import com.roughike.bottombar.OnTabSelectListener;
 import com.zyascend.NoBoring.R;
 import com.zyascend.NoBoring.base.BaseActivity;
+import com.zyascend.NoBoring.fragment.CommunityFragment;
 import com.zyascend.NoBoring.fragment.DuanziFragment;
 import com.zyascend.NoBoring.fragment.GirlFragment;
 import com.zyascend.NoBoring.fragment.QuwenFragment;
 import com.zyascend.NoBoring.fragment.ShiPinFragment;
 
+import com.zyascend.NoBoring.utils.ActivityUtils;
 import com.zyascend.NoBoring.utils.CacheCleanUtils;
+import com.zyascend.NoBoring.utils.CircleTransform;
 import com.zyascend.NoBoring.utils.rxbus.DateEvent;
 import com.zyascend.NoBoring.utils.rxbus.NextEvent;
 import com.zyascend.NoBoring.utils.rxbus.RxBus;
 import com.zyascend.NoBoring.utils.rxbus.RxBusSubscriber;
 import com.zyascend.NoBoring.utils.rxbus.RxSubscriptions;
 import com.zyascend.NoBoring.utils.SPUtils;
+import com.zyascend.NoBoring.utils.view.CircleDrawale;
 
 import butterknife.Bind;
 import rx.Subscription;
 
+import static com.zyascend.NoBoring.utils.AVObjectKeysInterface.HEAD_PIC;
+
 public class MainActivity extends BaseActivity
-        implements NavigationView.OnNavigationItemSelectedListener, OnTabSelectListener, OnTabReselectListener {
+        implements NavigationView.OnNavigationItemSelectedListener, OnTabSelectListener, OnTabReselectListener, View.OnClickListener {
     private static final String TAG = "TAG_MainActivity";
 
     @Bind(R.id.nav_view)
@@ -55,8 +73,12 @@ public class MainActivity extends BaseActivity
     private GirlFragment girlFragment;
     private ShiPinFragment shipinFragment;
     private QuwenFragment quwenFragment;
+    private CommunityFragment communityFragment;
     private boolean isShow = false;
     private TextView mCacheText;
+    private TextView userName;
+    private ImageView userHeadPic;
+
 
     @Override
     public int getLayoutId() {
@@ -68,6 +90,7 @@ public class MainActivity extends BaseActivity
         subscribleEvent();
         setDrawer();
         loadFragment();
+//        checkIfUpdate();
     }
 
 
@@ -78,6 +101,7 @@ public class MainActivity extends BaseActivity
         drawerLayout.addDrawerListener(toggle);
         toggle.syncState();
 
+        setupUserInfo();
 
         Menu menu = navView.getMenu();
         MenuItem pic = menu.findItem(R.id.menu_noPic);
@@ -116,6 +140,29 @@ public class MainActivity extends BaseActivity
         navView.setNavigationItemSelectedListener(this);
     }
 
+    private void setupUserInfo() {
+        //获取左侧headView
+        View headerView = navView.getHeaderView(0);
+        userName = (TextView) headerView.findViewById(R.id.tv_userName);
+        userHeadPic = (ImageView) headerView.findViewById(R.id.ivProfilePic);
+
+        userHeadPic.setOnClickListener(this);
+        userName.setOnClickListener(this);
+        AVUser user= AVUser.getCurrentUser();
+        if (user != null){
+            userName.setText(user.getUsername());
+
+            String picUrl = user.getAVFile(HEAD_PIC) == null ? null : user.getAVFile(HEAD_PIC).getUrl();
+            if (!TextUtils.isEmpty(picUrl)){
+                Glide.with(this)
+                        .load(picUrl)
+                        .diskCacheStrategy(DiskCacheStrategy.RESULT)
+                        .transform(new CircleTransform(this))
+                        .into(userHeadPic);
+            }
+        }
+    }
+
     private void restartActivity() {
         this.finish();
         this.startActivity(new Intent(this, MainActivity.class));
@@ -125,11 +172,11 @@ public class MainActivity extends BaseActivity
         if (isChecked) {
             //turn on night mode
             ChangeToNight();
-            Toast.makeText(MainActivity.this, "Night Mode On!!!", Toast.LENGTH_SHORT).show();
+//            Toast.makeText(MainActivity.this, "Night Mode On!!!", Toast.LENGTH_SHORT).show();
         } else {
             //turn off night mode
             ChangeToDay();
-            Toast.makeText(MainActivity.this, "Night Mode Off!!!", Toast.LENGTH_SHORT).show();
+//            Toast.makeText(MainActivity.this, "Night Mode Off!!!", Toast.LENGTH_SHORT).show();
         }
 //        recreateOnResume();
         this.finish();
@@ -156,19 +203,23 @@ public class MainActivity extends BaseActivity
 
     public void loadFragment() {
         setToolbarTitle("段子");
-        if (saveState == null){
+        if (saveState == null) {
+
         }
 
         duanziFragment = new DuanziFragment();
         girlFragment = new GirlFragment();
         shipinFragment = new ShiPinFragment();
         quwenFragment = new QuwenFragment();
+        communityFragment = new CommunityFragment();
+
 
         getSupportFragmentManager().beginTransaction()
-                .add(R.id.fragmentContent,quwenFragment)
-                .add(R.id.fragmentContent,duanziFragment)
+                .add(R.id.fragmentContent, quwenFragment)
+                .add(R.id.fragmentContent, duanziFragment)
                 .add(R.id.fragmentContent, girlFragment)
-                .add(R.id.fragmentContent,shipinFragment)
+                .add(R.id.fragmentContent, shipinFragment)
+                .add(R.id.fragmentContent, communityFragment)
                 .commit();
 
         bottomBar.setOnTabSelectListener(this);
@@ -186,12 +237,14 @@ public class MainActivity extends BaseActivity
                 setCacheText();
                 break;
             case R.id.menu_about:
-                Intent intent = new Intent(this,AboutActivity.class);
+                Intent intent = new Intent(this, AboutActivity.class);
                 startActivity(intent);
                 break;
             case R.id.menu_exit:
-                this.finish();
-                System.exit(0);
+                //退出登录
+                AVUser.getCurrentUser().logOut();
+                startActivity(new Intent(MainActivity.this, LoginActivity.class));
+                MainActivity.this.finish();
                 break;
 
         }
@@ -210,9 +263,9 @@ public class MainActivity extends BaseActivity
 
     @Override
     public void onTabSelected(@IdRes int tabId) {
-        if (isAnyFragmentNull())return;
+        if (isAnyFragmentNull()) return;
         toggleNextMenuItem(false);
-        switch (tabId){
+        switch (tabId) {
             case R.id.tab_quwen:
                 setToolbarTitle("趣闻");
                 getSupportFragmentManager().beginTransaction()
@@ -220,6 +273,7 @@ public class MainActivity extends BaseActivity
                         .hide(duanziFragment)
                         .hide(shipinFragment)
                         .hide(girlFragment)
+                        .hide(communityFragment)
                         .commit();
                 break;
             case R.id.tab_duanzi:
@@ -229,6 +283,7 @@ public class MainActivity extends BaseActivity
                         .hide(quwenFragment)
                         .hide(shipinFragment)
                         .hide(girlFragment)
+                        .hide(communityFragment)
                         .commit();
                 break;
             case R.id.tab_shipin:
@@ -238,6 +293,7 @@ public class MainActivity extends BaseActivity
                         .hide(quwenFragment)
                         .hide(duanziFragment)
                         .hide(girlFragment)
+                        .hide(communityFragment)
                         .commit();
                 break;
             case R.id.tab_qutu:
@@ -247,6 +303,17 @@ public class MainActivity extends BaseActivity
                         .hide(quwenFragment)
                         .hide(shipinFragment)
                         .hide(duanziFragment)
+                        .hide(communityFragment)
+                        .commit();
+                break;
+            case R.id.tab_community:
+                setToolbarTitle("发现");
+                getSupportFragmentManager().beginTransaction()
+                        .show(communityFragment)
+                        .hide(quwenFragment)
+                        .hide(shipinFragment)
+                        .hide(duanziFragment)
+                        .hide(girlFragment)
                         .commit();
                 break;
         }
@@ -267,22 +334,23 @@ public class MainActivity extends BaseActivity
         getMenuInflater().inflate(R.menu.main, menu);
         MenuItem last = menu.findItem(R.id.action_last);
         MenuItem today = menu.findItem(R.id.action_today);
-        if(isShow){
+        if (isShow) {
             last.setVisible(true);
             today.setVisible(true);
-        }else {
+        } else {
             last.setVisible(false);
             today.setVisible(false);
         }
         return true;
     }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
 
         int id = item.getItemId();
         if (id == R.id.action_last) {
             RxBus.getDefault().postSticky(new NextEvent(0));
-        }else if (id == R.id.action_today){
+        } else if (id == R.id.action_today) {
             RxBus.getDefault().postSticky(new NextEvent(1));
         }
         return true;
@@ -291,13 +359,13 @@ public class MainActivity extends BaseActivity
 
     private Subscription mRxSubSticky;
 
-    private void toggleNextMenuItem(boolean show){
+    private void toggleNextMenuItem(boolean show) {
         boolean needInvalidate = show != this.isShow;
         this.isShow = show;
-        if (needInvalidate)invalidateOptionsMenu();
+        if (needInvalidate) invalidateOptionsMenu();
     }
 
-    private void subscribleEvent(){
+    private void subscribleEvent() {
         if (mRxSubSticky != null && !mRxSubSticky.isUnsubscribed()) {
             RxSubscriptions.remove(mRxSubSticky);
         } else {
@@ -308,7 +376,7 @@ public class MainActivity extends BaseActivity
                     .subscribe(new RxBusSubscriber<DateEvent>() {
                         @Override
                         protected void onEvent(DateEvent dateEvent) {
-                            if (dateEvent == null)return;
+                            if (dateEvent == null) return;
                             setToolbarTitle(dateEvent.date);
                             toggleNextMenuItem(dateEvent.isShow);
                         }
@@ -317,10 +385,31 @@ public class MainActivity extends BaseActivity
         RxSubscriptions.add(mRxSubSticky);
     }
 
+
     @Override
     protected void onDestroy() {
         super.onDestroy();
         RxSubscriptions.remove(mRxSubSticky);
         RxBus.getDefault().removeAllStickyEvents();
+    }
+
+
+
+    @Override
+    public void onClick(View v) {
+        Toast.makeText(this, "dianjile.....", Toast.LENGTH_SHORT).show();
+        switch (v.getId()){
+            case R.id.ivProfilePic:
+            case R.id.tv_userName:
+                if (AVUser.getCurrentUser() == null){
+                    //跳转到登录界面
+                    ActivityUtils.jumpTo(this,LoginActivity.class);
+                    MainActivity.this.finish();
+                }else {
+                    //跳转到用户界面
+                    ActivityUtils.jumpTo(this,UserActivity.class);
+                }
+                break;
+        }
     }
 }

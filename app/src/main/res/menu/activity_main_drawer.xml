@@ -33,7 +33,7 @@
             <item
                 android:id="@+id/menu_exit"
                 android:icon="@drawable/ic_exit"
-                android:title="退出"/>
+                android:title="注销登录"/>
         </menu>
     </item>
 

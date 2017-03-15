@@ -8,26 +8,13 @@ import rx.schedulers.Schedulers;
 import rx.subjects.PublishSubject;
 
 /**
+ *
  * Created by Administrator on 2016/11/22.
  */
 
 public enum RxTransformer {
 
         INSTANCE;
-//    private static RxTransformer INSTANCE;
-//    public static RxTransformer getInstance(){
-//        if (INSTANCE == null){
-//            synchronized (RxTransformer.class){
-//                if (INSTANCE == null){
-//                    INSTANCE = new RxTransformer();
-//
-//                }
-//            }
-//
-//        }
-//        return INSTANCE;
-//    }
-//
 
     public <T> Observable.Transformer<T,T> transform(final PublishSubject<LifeCycleEvent> lifecycleSubject){
 

@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <android.support.v7.widget.Toolbar
+        android:title="@string/text_detail"
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="?attr/colorPrimary"
+        app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+        app:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>
+
+    <com.zyascend.NoBoring.utils.view.FloatScrollView
+        android:id="@+id/floatScrollView"
+        android:layout_below="@+id/toolbar"
+        android:scrollbars="none"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <LinearLayout
+            android:background="?containerBackground"
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <RelativeLayout
+                android:padding="10dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <ImageView
+                    android:id="@+id/iv_person"
+                    android:src="@drawable/ic_person"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp" />
+                <TextView
+                    android:id="@+id/tv_user"
+                    tools:text="DDDDD"
+                    android:textColor="?titleColor"
+                    android:textSize="15sp"
+                    android:layout_toEndOf="@+id/iv_person"
+                    android:layout_marginStart="5dp"
+                    android:lines="1"
+                    android:maxLength="100"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+                <TextView
+                    android:layout_marginTop="5dp"
+                    android:layout_below="@+id/tv_user"
+                    tools:text="一分钟前"
+                    android:textColor="?textColor"
+                    android:textSize="13sp"
+                    android:layout_toEndOf="@+id/iv_person"
+                    android:layout_marginStart="5dp"
+                    android:lines="1"
+                    android:maxLength="100"
+                     android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+                <TextView
+                    android:id="@+id/tv_comment"
+                    android:drawableStart="@drawable/ic_comment"
+                    android:drawablePadding="5dp"
+                    android:text="@string/num_zero"
+                    android:layout_alignParentEnd="true"
+                    android:textSize="15sp"
+                    android:textColor="?textColor"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+                <TextView
+                    android:id="@+id/tv_likes"
+                    android:drawableStart="@drawable/ic_likes"
+                    android:drawablePadding="5dp"
+                    android:text="@string/num_zero"
+                    android:textSize="15sp"
+                    android:textColor="?textColor"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentTop="true"
+                    android:layout_marginEnd="5dp"
+                    android:layout_toStartOf="@+id/tv_comment" />
+
+            </RelativeLayout>
+
+            <TextView
+                android:layout_marginStart="10dp"
+                android:id="@+id/tv_title"
+                android:layout_marginTop="10dp"
+                android:textStyle="bold"
+                android:textColor="?titleColor"
+                tools:text="这是我的标题呀"
+                android:textSize="18sp"
+                android:lines="1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <TextView
+                android:layout_marginStart="10dp"
+                android:id="@+id/tv_content"
+                android:layout_marginTop="8dp"
+                android:textColor="?textColor"
+                tools:text="这是我的内容呀降低阿萨德哈大三大四的多哈上帝啊哈hi活动艾哈海底大的"
+                android:textSize="15sp"
+                android:lineSpacingExtra="5dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <ImageView
+                android:layout_marginTop="5dp"
+                android:id="@+id/iv_pic1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+            <ImageView
+                android:layout_marginTop="5dp"
+                android:id="@+id/iv_pic2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+            <ImageView
+                android:layout_marginTop="5dp"
+                android:id="@+id/iv_pic3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <include layout="@layout/layout_comment_list"/>
+
+        </LinearLayout>
+    </com.zyascend.NoBoring.utils.view.FloatScrollView>
+
+    <include layout="@layout/view_send_comment"/>
+    <include layout="@layout/view_reply"/>
+
+    <ViewStub
+        android:layout="@layout/layout_error"
+        android:id="@+id/view_error"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+</RelativeLayout>

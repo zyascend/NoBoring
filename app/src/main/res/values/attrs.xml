@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <attr name="containerBackground" format="reference|color"/>
+    <attr name="containerBackground" format="color"/>
     <attr name="cardBackground" format="reference|color"/>
     <attr name="titleColor" format="reference|color"/>
     <attr name="textColor" format="reference|color"/>
@@ -11,6 +11,6 @@
     <attr name="bottomInActive" format="reference"/>
     <attr name="bottomActive" format="reference"/>
     <attr name="bottomBackground" format="reference"/>
-
-
+    <!--为了给图片设值tag-->
+    <item name="imageid" type="id"/>
 </resources>

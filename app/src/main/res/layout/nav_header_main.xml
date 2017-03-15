@@ -1,8 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ImageView
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/iv_header"
-    android:layout_width="match_parent"
+<RelativeLayout
     android:layout_height="200dp"
-    android:scaleType="centerCrop"
-    android:src="?headerImage"/>
+    android:layout_width="match_parent"
+    xmlns:android="http://schemas.android.com/apk/res/android" >
+    <ImageView
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/iv_header"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scaleType="centerCrop"
+        android:src="@drawable/drawer_day"/>
+
+    <ImageView
+        android:id="@+id/ivProfilePic"
+        android:src="@mipmap/launcher"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginStart="20dp"
+        android:layout_marginBottom="20dp" />
+
+    <TextView
+        android:text="@string/pleaseLogin"
+        android:textColor="@android:color/white"
+        android:textSize="20sp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/tv_userName"
+        android:layout_alignBottom="@+id/ivProfilePic"
+        android:layout_toEndOf="@+id/ivProfilePic"
+        android:layout_marginStart="20dp" />
+
+</RelativeLayout>
