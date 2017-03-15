@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    android:background="@drawable/dialog_bg"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+
+    <TextView
+        android:layout_marginTop="15dp"
+        android:layout_marginStart="15dp"
+        android:textColor="@android:color/black"
+        android:textSize="20sp"
+        android:text="@string/register"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <android.support.design.widget.TextInputLayout
+        android:layout_margin="10dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <AutoCompleteTextView
+            android:id="@+id/username"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/username"
+            android:inputType="text"
+            android:maxLines="1"
+            android:singleLine="true"/>
+
+    </android.support.design.widget.TextInputLayout>
+
+    <android.support.design.widget.TextInputLayout
+        android:layout_margin="10dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <EditText
+            android:id="@+id/password"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/password"
+            android:imeActionId="@+id/login"
+            android:imeActionLabel="@string/action_sign_in_short"
+            android:imeOptions="actionUnspecified"
+            android:inputType="textPassword"
+            android:maxLines="1"
+            android:singleLine="true"/>
+
+    </android.support.design.widget.TextInputLayout>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <Button
+            android:id="@+id/btn_dismiss"
+            style="?android:textAppearanceSmall"
+            android:background="?colorPrimary"
+            android:textColor="@android:color/white"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:text="取消"
+            android:textStyle="bold"/>
+
+        <Button
+            android:id="@+id/btn_sure"
+            style="?android:textAppearanceSmall"
+            android:background="@color/material_blue"
+            android:textColor="@android:color/white"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:text="注册并登录"
+            android:textStyle="bold"/>
+    </LinearLayout>
+
+</LinearLayout>

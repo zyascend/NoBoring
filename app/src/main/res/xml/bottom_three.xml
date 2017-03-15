@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<tabs
+    >
+
+    <tab
+        inActiveColor="?attr/bottomInActive"
+        activeColor="?attr/bottomInActive"
+        barColorWhenSelected="?attr/bottomBackground"
+        id="@+id/tab_quwen"
+        icon="@drawable/ic_quwen"
+        title="趣闻"/>
+    <tab
+        inActiveColor="?attr/bottomInActive"
+        activeColor="?attr/bottomInActive"
+        barColorWhenSelected="?attr/bottomBackground"
+        id="@+id/tab_duanzi"
+        icon="@drawable/ic_duanzi"
+        title="段子"/>
+    <tab
+        inActiveColor="?attr/bottomInActive"
+        activeColor="?attr/bottomInActive"
+        barColorWhenSelected="?attr/bottomBackground"
+        id="@+id/tab_shipin"
+        icon="@drawable/ic_shipin"
+        title="视频" />
+    <tab
+        inActiveColor="?attr/bottomInActive"
+        activeColor="?attr/bottomInActive"
+        barColorWhenSelected="?attr/bottomBackground"
+        id="@+id/tab_qutu"
+        icon="@drawable/ic_qutu"
+        title="美图" />
+    <tab
+        inActiveColor="?attr/bottomInActive"
+        activeColor="?attr/bottomInActive"
+        barColorWhenSelected="?attr/bottomBackground"
+        id="@+id/tab_community"
+        icon="@drawable/ic_community"
+        title="发现" />
+</tabs>

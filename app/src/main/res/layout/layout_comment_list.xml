@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <RelativeLayout
+        android:id="@+id/ll_commentTab"
+        android:layout_margin="10dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/text"
+            android:text="@string/text_allComments"
+            android:textSize="14sp"
+            android:textColor="?textColor"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+
+        <TextView
+            android:layout_marginStart="10dp"
+            android:id="@+id/tv_comment_num"
+            tools:text="1000"
+            android:layout_toEndOf="@+id/text"
+            android:textSize="14sp"
+            android:textColor="?textColor"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+
+        <TextView
+            android:id="@+id/tv_comment_hotest"
+            android:text="@string/hotest"
+            android:layout_toStartOf="@+id/divider"
+            android:textSize="14sp"
+            android:layout_marginEnd="10dp"
+            android:textColor="?textColor"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+
+
+        <TextView
+            android:id="@+id/divider"
+            android:text="|"
+            android:textSize="14sp"
+            android:layout_toStartOf="@+id/tv_comment_newest"
+            android:layout_marginEnd="10dp"
+            android:textColor="?textColor"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:id="@+id/tv_comment_newest"
+            android:text="@string/text_news"
+            android:layout_alignParentEnd="true"
+            android:textSize="14sp"
+            android:textColor="?textColor"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </RelativeLayout>
+
+    <android.support.v7.widget.RecyclerView
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="60dp"
+        android:id="@+id/recyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+</LinearLayout>
