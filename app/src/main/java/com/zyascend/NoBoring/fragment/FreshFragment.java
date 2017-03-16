@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
 
-
 import com.jude.easyrecyclerview.adapter.RecyclerArrayAdapter;
 import com.zyascend.NoBoring.API;
 import com.zyascend.NoBoring.Constants;
@@ -24,7 +23,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import rx.Observable;
-import rx.Subscriber;
 import rx.functions.Action0;
 
 /**

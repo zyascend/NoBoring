@@ -83,6 +83,9 @@ public class CommentAdapter extends BaseAdapter implements AVObjectKeysInterface
                     if (head != null){
                         String headUrl = head.getUrl();
                         if (!TextUtils.isEmpty(headUrl)){
+
+                            // TODO: 2017/3/16
+
                             Glide.with(mContext)
                                     .load(headUrl)
                                     .diskCacheStrategy(DiskCacheStrategy.SOURCE)

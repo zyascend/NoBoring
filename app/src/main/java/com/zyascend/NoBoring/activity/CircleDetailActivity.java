@@ -1,7 +1,6 @@
 package com.zyascend.NoBoring.activity;
 
 import android.graphics.Color;
-import android.support.v4.widget.NestedScrollView;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
@@ -128,6 +127,7 @@ public class CircleDetailActivity extends BaseActivity implements AVObjectKeysIn
         if (!TextUtils.isEmpty(circleId)) {
             fetchData();
         }
+
         adapter = new CommentAdapter(this);
         adapter.setOnItemClickListener(new BaseAdapter.OnItemClickListener() {
             @Override
@@ -384,4 +384,8 @@ public class CircleDetailActivity extends BaseActivity implements AVObjectKeysIn
         Toast.makeText(this, s, Toast.LENGTH_SHORT).show();
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+    }
 }
