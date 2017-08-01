@@ -9,17 +9,16 @@ import android.widget.LinearLayout;
 
 import com.jude.easyrecyclerview.EasyRecyclerView;
 import com.jude.easyrecyclerview.adapter.RecyclerArrayAdapter;
-import com.zyascend.NoBoring.API;
-import com.zyascend.NoBoring.Constants;
+import com.zyascend.NoBoring.http.API;
+import com.zyascend.NoBoring.utils.Constants;
 import com.zyascend.NoBoring.R;
 import com.zyascend.NoBoring.adapter.VideoAdapter;
 import com.zyascend.NoBoring.base.BaseRecyclerFragment;
 import com.zyascend.NoBoring.dao.BudejieVideo;
 import com.zyascend.NoBoring.dao.BudejieVideoResult;
-import com.zyascend.NoBoring.utils.DaoUtils;
-import com.zyascend.NoBoring.utils.RetrofitService;
-import com.zyascend.NoBoring.utils.RxTransformer;
-import com.zyascend.NoBoring.utils.FlatMapBudejieVideo;
+import com.zyascend.NoBoring.http.RetrofitService;
+import com.zyascend.NoBoring.utils.rx.RxTransformer;
+import com.zyascend.NoBoring.utils.rx.FlatMapBudejieVideo;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -46,7 +45,7 @@ public class ShiPingListFragment extends BaseRecyclerFragment<VideoAdapter> impl
     private static final int TYPE_GAME = 1;
     private static final int TYPE_ZHISHI = 2;
 
-    @Bind(R.id.recyclerview)
+    @Bind(R.id.recyclerView)
     EasyRecyclerView easyRecyclerView;
     @Bind(R.id.ll_error)
     LinearLayout llError;

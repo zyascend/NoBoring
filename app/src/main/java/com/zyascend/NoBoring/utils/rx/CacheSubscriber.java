@@ -1,4 +1,4 @@
-package com.zyascend.NoBoring.utils;
+package com.zyascend.NoBoring.utils.rx;
 
 import rx.Subscriber;
 

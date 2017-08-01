@@ -1,10 +1,9 @@
 package com.zyascend.NoBoring.fragment;
 
 import android.content.Intent;
-import android.os.Looper;
 import android.util.Log;
 
-import com.zyascend.NoBoring.API;
+import com.zyascend.NoBoring.http.API;
 import com.zyascend.NoBoring.activity.BaseDetailActivity;
 import com.zyascend.NoBoring.adapter.ZhiHuAdapter;
 import com.zyascend.NoBoring.base.BaseRecyclerFragment;
@@ -12,8 +11,8 @@ import com.zyascend.NoBoring.dao.ZhiHuResult;
 import com.zyascend.NoBoring.utils.rxbus.DateEvent;
 import com.zyascend.NoBoring.utils.rxbus.NextEvent;
 import com.zyascend.NoBoring.utils.rxbus.RxBus;
-import com.zyascend.NoBoring.utils.RxTransformer;
-import com.zyascend.NoBoring.utils.ZhihuService;
+import com.zyascend.NoBoring.utils.rx.RxTransformer;
+import com.zyascend.NoBoring.http.ZhihuService;
 import com.zyascend.NoBoring.utils.rxbus.RxBusSubscriber;
 import com.zyascend.NoBoring.utils.rxbus.RxSubscriptions;
 
@@ -55,7 +54,7 @@ public class ZhihuFragment extends BaseRecyclerFragment<ZhiHuAdapter> {
         api = ZhihuService.getInstance().getAPI();
         setDate();
         adapter.removeAllFooter();
-        subscribleEvent();
+        subscribeEvent();
     }
 
     @Override
@@ -209,8 +208,9 @@ public class ZhihuFragment extends BaseRecyclerFragment<ZhiHuAdapter> {
 
     private Subscription mNextSub;
 
-    private void subscribleEvent(){
+    private void subscribeEvent(){
         if (mNextSub != null && !mNextSub.isUnsubscribed()) {
+            //清除以前的订阅
             RxSubscriptions.remove(mNextSub);
         } else {
             NextEvent event = RxBus.getDefault().getStickyEvent(NextEvent.class);

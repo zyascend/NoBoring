@@ -9,6 +9,7 @@ import com.bumptech.glide.load.data.DataFetcher;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.ref.WeakReference;
 
 import okhttp3.Call;
 import okhttp3.OkHttpClient;
@@ -16,20 +17,21 @@ import okhttp3.Request;
 import okhttp3.Response;
 
 /**
+ *
  * Created by Administrator on 2017/3/10.
  */
 public class ProgressDataFetcher implements DataFetcher<InputStream> {
 
     private static final String TAG = "ProgressDataFetcher";
     private String mUrl;
-    private Handler mHandler;
+    private WeakReference<Handler> handlerWeakReference;
     private boolean isCancel;
     private Call progressCall;
     private InputStream inputStream;
 
     public ProgressDataFetcher(String url, Handler handler) {
         this.mUrl = url;
-        this.mHandler = handler;
+        this.handlerWeakReference = new WeakReference<>(handler);
     }
 
     @Override
@@ -61,11 +63,11 @@ public class ProgressDataFetcher implements DataFetcher<InputStream> {
         return new ProgressListener() {
             @Override
             public void onProgress(long downloadedLength, long contentLength, boolean isDone) {
-                Message message = mHandler.obtainMessage();
+                Message message = handlerWeakReference.get().obtainMessage();
                 message.arg1 = (int) downloadedLength;
                 message.arg2 = (int) contentLength;
                 message.obj = isDone;
-                mHandler.sendMessage(message);
+                handlerWeakReference.get().sendMessage(message);
             }
         };
     }

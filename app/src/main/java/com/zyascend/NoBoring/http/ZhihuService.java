@@ -1,11 +1,12 @@
-package com.zyascend.NoBoring.utils;
+package com.zyascend.NoBoring.http;
 
 import android.text.TextUtils;
 import android.util.Log;
 
-import com.zyascend.NoBoring.API;
-import com.zyascend.NoBoring.Constants;
+import com.zyascend.NoBoring.utils.Constants;
 import com.zyascend.NoBoring.base.BaseApplication;
+import com.zyascend.NoBoring.utils.LogUtils;
+import com.zyascend.NoBoring.utils.NetStateUtil;
 
 import java.io.File;
 import java.io.IOException;
@@ -73,7 +74,7 @@ public class ZhihuService {
     private static final int MAX_AGE_DEFAULT = 30;
     private static final int MAX_STALE_DEFAULT = 60 * 60 * 6; // 没网失效6小时
 
-    private static final Interceptor CACHE_INTERCEPTOR = new Interceptor() {
+    public static final Interceptor CACHE_INTERCEPTOR = new Interceptor() {
         @Override
         public Response intercept(Chain chain) throws IOException {
 
@@ -98,6 +99,8 @@ public class ZhihuService {
                         .removeHeader("Cache-Control")
                         .removeHeader("ETag")
                         .header("Cache-Control", cacheControl)
+                        .header("X-LC-Id","ioJGwMTChBTt0qRdhWFhhEye-gzGzoHsz")
+                        .header("X-LC-Key","VVIjOnCkOuS4s2ETvmCavUus")
                         .build();
             }else {
 
@@ -106,6 +109,8 @@ public class ZhihuService {
                         .removeHeader("Cache-Control")
                         .removeHeader("ETag")
                         .header("Cache-Control", "public, only-if-cached, max-stale=" + MAX_STALE_DEFAULT)
+                        .header("X-LC-Id","ioJGwMTChBTt0qRdhWFhhEye-gzGzoHsz")
+                        .header("X-LC-Key","VVIjOnCkOuS4s2ETvmCavUus")
                         .build();
             }
             return finalResponse;
@@ -113,7 +118,7 @@ public class ZhihuService {
     };
 
 
-    private static final Interceptor LOG_INTERCEPTOR = new Interceptor() {
+    public static final Interceptor LOG_INTERCEPTOR = new Interceptor() {
         @Override
         public Response intercept(Chain chain) throws IOException {
             Request request = chain.request();
@@ -127,7 +132,7 @@ public class ZhihuService {
     };
 
     private static void log(String msg){
-        Log.e("TAG_ZhiHuService", "----->"+"\t\t"+msg);
+        LogUtils.d("[ Request ] ",msg);
     }
 
 }

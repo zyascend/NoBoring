@@ -57,7 +57,6 @@ public class VideoAdapter extends RecyclerArrayAdapter<BudejieVideo> {
                 return;
             }
 
-
             player.setUp(data.getVideoUrl(), JCVideoPlayer.SCREEN_LAYOUT_LIST,"");
             tvTitle.setText(data.getTitle());
             Glide.with(getContext())

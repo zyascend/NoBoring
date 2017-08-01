@@ -9,8 +9,8 @@ import android.widget.LinearLayout;
 
 import com.jude.easyrecyclerview.EasyRecyclerView;
 import com.jude.easyrecyclerview.adapter.RecyclerArrayAdapter;
-import com.zyascend.NoBoring.API;
-import com.zyascend.NoBoring.Constants;
+import com.zyascend.NoBoring.http.API;
+import com.zyascend.NoBoring.utils.Constants;
 import com.zyascend.NoBoring.R;
 import com.zyascend.NoBoring.activity.PhotoActivity;
 import com.zyascend.NoBoring.adapter.GirlAdapter;
@@ -18,15 +18,14 @@ import com.zyascend.NoBoring.base.BaseFlatMap;
 import com.zyascend.NoBoring.base.BaseFragment;
 import com.zyascend.NoBoring.dao.Girl;
 import com.zyascend.NoBoring.dao.GirlResult;
-import com.zyascend.NoBoring.utils.CacheSubscriber;
+import com.zyascend.NoBoring.utils.rx.CacheSubscriber;
 import com.zyascend.NoBoring.utils.DaoUtils;
-import com.zyascend.NoBoring.utils.RetrofitService;
-import com.zyascend.NoBoring.utils.RxTransformer;
+import com.zyascend.NoBoring.http.RetrofitService;
+import com.zyascend.NoBoring.utils.rx.RxTransformer;
 import java.util.ArrayList;
 import java.util.List;
 import butterknife.Bind;
 import rx.Observable;
-import rx.Subscriber;
 import rx.functions.Action0;
 
 
@@ -39,7 +38,7 @@ public class GirlFragment extends BaseFragment implements SwipeRefreshLayout.OnR
 
     private static final String TAG = "TAG_GirlFragment";
 
-    @Bind(R.id.recyclerview)
+    @Bind(R.id.recyclerView)
     EasyRecyclerView easyRecyclerview;
     @Bind(R.id.ll_error)
     LinearLayout llError;

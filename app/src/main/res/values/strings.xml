@@ -61,4 +61,9 @@
     <string name="myCircle">我的帖子</string>
     <string name="myLikes">我的点赞</string>
     <string name="my">我的</string>
+    <string name="email">邮箱地址</string>
+    <string name="post">帖子</string>
+    <string name="follower">关注者</string>
+    <string name="followee">关注</string>
+    <string name="editProfile">编辑资料</string>
 </resources>

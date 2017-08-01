@@ -6,6 +6,8 @@ import android.widget.CompoundButton;
 
 import com.zyascend.NoBoring.activity.MainActivity;
 import com.zyascend.NoBoring.base.BaseApplication;
+import com.zyascend.NoBoring.bean.LoginResponse;
+import com.zyascend.NoBoring.bean.RegisterResponse;
 
 /**
  *
@@ -17,6 +19,10 @@ public class SPUtils {
     private static final String FILE_NAME = "file_name";
     private static final String TAG = "TAG_SPUtils";
     public static final String ENTRANCE_PIC = "pic";
+    public static final String SESSION_TOKEN = "session_token";
+    public static final String USER_ID = "user_id";
+    public static final String USER_NAME = "user_name";
+    public static final String AVATAR_URL = "avatar";
 
     public static boolean getBoolean(String key, boolean defaultValue, Context context) {
         boolean b = context.getSharedPreferences(FILE_NAME,Context.MODE_PRIVATE)
@@ -47,5 +53,20 @@ public class SPUtils {
                 .getString(key,def);
         Log.d(TAG, "getString: "+content);
         return content;
+    }
+
+
+    public static void putUserInfo(LoginResponse response) {
+        SPUtils.putString(response.getSessionToken(),SESSION_TOKEN);
+        SPUtils.putString(response.getObjectId(),USER_ID);
+        SPUtils.putString(response.getUsername(),USER_NAME);
+        SPUtils.putString(response.getAvatarUrl(),AVATAR_URL);
+    }
+
+    public static void putUserInfo(RegisterResponse response,String name) {
+        SPUtils.putString(response.getSessionToken(),SESSION_TOKEN);
+        SPUtils.putString(response.getObjectId(),USER_ID);
+        SPUtils.putString(name,USER_NAME);
+
     }
 }

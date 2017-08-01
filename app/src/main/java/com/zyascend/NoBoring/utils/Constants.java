@@ -1,4 +1,4 @@
-package com.zyascend.NoBoring;
+package com.zyascend.NoBoring.utils;
 
 /**
  *
@@ -23,5 +23,9 @@ public class Constants {
     public static final String BASE_URL_BUDEJIE = "http://s.budejie.com/";
     public static final String BASE_URL_ZHIHU = "http://news-at.zhihu.com/api/4/";
 
+    public static final String BASE_URL_LEANCLOUD = "https://api.leancloud.cn/1.1/";
+
+    public static final String OP_INCREMENT = "Increment";
+    public static final String OP_DECREMENT = "Decrement";
 }
 

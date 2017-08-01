@@ -5,8 +5,8 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
 
 import com.jude.easyrecyclerview.adapter.RecyclerArrayAdapter;
-import com.zyascend.NoBoring.API;
-import com.zyascend.NoBoring.Constants;
+import com.zyascend.NoBoring.http.API;
+import com.zyascend.NoBoring.utils.Constants;
 import com.zyascend.NoBoring.R;
 import com.zyascend.NoBoring.adapter.TextJokeAdapter;
 import com.zyascend.NoBoring.base.BaseFlatMap;
@@ -15,16 +15,15 @@ import com.zyascend.NoBoring.base.BaseRecyclerFragment;
 import com.zyascend.NoBoring.dao.TextJoke;
 import com.zyascend.NoBoring.dao.TextJokeResult;
 import com.zyascend.NoBoring.utils.ActivityUtils;
-import com.zyascend.NoBoring.utils.CacheSubscriber;
+import com.zyascend.NoBoring.utils.rx.CacheSubscriber;
 import com.zyascend.NoBoring.utils.DaoUtils;
-import com.zyascend.NoBoring.utils.RetrofitService;
-import com.zyascend.NoBoring.utils.RxTransformer;
+import com.zyascend.NoBoring.http.RetrofitService;
+import com.zyascend.NoBoring.utils.rx.RxTransformer;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import rx.Observable;
-import rx.Subscriber;
 import rx.functions.Action0;
 
 /**

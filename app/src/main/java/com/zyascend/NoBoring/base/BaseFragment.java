@@ -1,20 +1,19 @@
 package com.zyascend.NoBoring.base;
 
-import android.graphics.Color;
+import android.app.Activity;
+import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.squareup.leakcanary.RefWatcher;
-import com.zyascend.NoBoring.R;
-import com.zyascend.NoBoring.utils.LifeCycleEvent;
+import com.zyascend.NoBoring.utils.rx.LifeCycleEvent;
 
 import butterknife.ButterKnife;
 import rx.Subscription;
@@ -37,6 +36,7 @@ public abstract class BaseFragment extends Fragment{
     protected View rootView;
     private static final String STATE_SAVE_IS_HIDDEN = "hidden";
     private boolean isVisible;
+    protected Activity mActivity;
 
 
     @Override
@@ -54,6 +54,13 @@ public abstract class BaseFragment extends Fragment{
             }
             ft.commit();
         }
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        //防止getActivity()返回null
+        this.mActivity = (Activity) context;
     }
 
     @Nullable

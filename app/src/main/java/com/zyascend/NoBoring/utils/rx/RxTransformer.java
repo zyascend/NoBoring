@@ -1,7 +1,6 @@
-package com.zyascend.NoBoring.utils;
+package com.zyascend.NoBoring.utils.rx;
 
 import rx.Observable;
-import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Func1;
 import rx.schedulers.Schedulers;

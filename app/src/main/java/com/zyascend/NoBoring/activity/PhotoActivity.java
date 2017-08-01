@@ -2,14 +2,11 @@ package com.zyascend.NoBoring.activity;
 
 import android.Manifest;
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
 import android.graphics.PointF;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Environment;
 import android.os.Looper;
@@ -35,21 +32,17 @@ import com.litesuits.common.io.FileUtils;
 import com.zyascend.NoBoring.R;
 import com.zyascend.NoBoring.base.BaseActivity;
 import com.zyascend.NoBoring.utils.ActivityUtils;
-import com.zyascend.NoBoring.utils.RxTransformer;
+import com.zyascend.NoBoring.utils.rx.RxTransformer;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.concurrent.ExecutionException;
 
 import butterknife.Bind;
 import rx.Observable;
-import rx.Observer;
 import rx.Subscriber;
-import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action0;
 import rx.functions.Func1;
-import rx.schedulers.Schedulers;
 
 /**
  *

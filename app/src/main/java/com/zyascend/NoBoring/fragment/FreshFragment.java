@@ -5,8 +5,8 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
 
 import com.jude.easyrecyclerview.adapter.RecyclerArrayAdapter;
-import com.zyascend.NoBoring.API;
-import com.zyascend.NoBoring.Constants;
+import com.zyascend.NoBoring.http.API;
+import com.zyascend.NoBoring.utils.Constants;
 import com.zyascend.NoBoring.activity.BaseDetailActivity;
 import com.zyascend.NoBoring.adapter.FreshAdapter;
 import com.zyascend.NoBoring.base.BaseFlatMap;
@@ -14,10 +14,10 @@ import com.zyascend.NoBoring.base.BaseFlatMap;
 import com.zyascend.NoBoring.base.BaseRecyclerFragment;
 import com.zyascend.NoBoring.dao.FreshResult;
 import com.zyascend.NoBoring.dao.Fresh;
-import com.zyascend.NoBoring.utils.CacheSubscriber;
+import com.zyascend.NoBoring.utils.rx.CacheSubscriber;
 import com.zyascend.NoBoring.utils.DaoUtils;
-import com.zyascend.NoBoring.utils.RetrofitService;
-import com.zyascend.NoBoring.utils.RxTransformer;
+import com.zyascend.NoBoring.http.RetrofitService;
+import com.zyascend.NoBoring.utils.rx.RxTransformer;
 
 import java.util.ArrayList;
 import java.util.List;

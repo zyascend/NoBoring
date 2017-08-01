@@ -1,220 +1,355 @@
 package com.zyascend.NoBoring.activity;
 
+import android.Manifest;
 import android.app.ProgressDialog;
-import android.content.Intent;
-import android.provider.MediaStore;
-import android.support.v7.widget.Toolbar;
+import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.os.Build;
+import android.os.Environment;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
+import android.support.v7.widget.AppCompatSpinner;
+import android.support.v7.widget.GridLayoutManager;
 import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.EditText;
+import android.view.ViewTreeObserver;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.TextView;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
-import com.avos.avoscloud.AVException;
-import com.avos.avoscloud.AVFile;
-import com.avos.avoscloud.AVObject;
-import com.avos.avoscloud.AVUser;
-import com.avos.avoscloud.SaveCallback;
+import com.avos.avoscloud.LogUtil;
+import com.fenchtose.nocropper.CropperCallback;
+import com.fenchtose.nocropper.CropperView;
 import com.zyascend.NoBoring.R;
+import com.zyascend.NoBoring.adapter.PhotoAdapter;
 import com.zyascend.NoBoring.base.BaseActivity;
-import com.zyascend.NoBoring.utils.AVObjectKeysInterface;
+import com.zyascend.NoBoring.base.BaseAdapter;
+import com.zyascend.NoBoring.dao.PhotoFolder;
 import com.zyascend.NoBoring.utils.ActivityUtils;
+import com.zyascend.NoBoring.utils.LogUtils;
+import com.zyascend.NoBoring.utils.picture.PhotoUtils;
+import com.zyascend.NoBoring.utils.picture.luban.Luban;
+import com.zyascend.NoBoring.utils.picture.luban.OnCompressListener;
+import com.zyascend.NoBoring.utils.rx.RxTransformer;
+import com.zyascend.NoBoring.utils.picture.BitmapUtils;
+import com.zyascend.NoBoring.utils.view.CoordinatorLinearLayout;
+import com.zyascend.NoBoring.utils.view.CoordinatorRecyclerView;
+import com.zyascend.NoBoring.utils.view.SpacesItemDecoration;
+import com.zyascend.NoBoring.utils.view.ViewUtils;
 
+import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Map;
 
 import butterknife.Bind;
 import butterknife.OnClick;
+import rx.Observable;
+import rx.Subscriber;
+import rx.functions.Action0;
 
-/**
- *
- * Created by Administrator on 2017/3/8.
- */
 
-public class PublishActivity extends BaseActivity implements AVObjectKeysInterface {
+public class PublishActivity extends BaseActivity {
 
-    private static final int PIC_CODE_01 = 111;
-    private static final int PIC_CODE_02 = 222;
-    private static final int PIC_CODE_03 = 333;
-    @Bind(R.id.ed_title)
-    EditText edTitle;
-    @Bind(R.id.ed_content)
-    EditText edContent;
-    @Bind(R.id.pic1)
-    ImageView pic1;
-    @Bind(R.id.pic2)
-    ImageView pic2;
-    @Bind(R.id.pic3)
-    ImageView pic3;
-    @Bind(R.id.iv_addPic)
-    ImageView ivAddPic;
-    @Bind(R.id.tv_delete_pic)
-    TextView tvDeletePic;
-    @Bind(R.id.toolbar)
-    Toolbar toolbar;
-    private byte[] mImageBytes_01 = null;
-    private byte[] mImageBytes_02 = null;
-    private byte[] mImageBytes_03 = null;
+    private static final int CODE_READ = 1;
+    private static final float TOP_REMAIN_HEIGHT = 48;
+    @Bind(R.id.fileSpinner)
+    AppCompatSpinner fileSpinner;
+    @Bind(R.id.progressBar)
+    ProgressBar progressBar;
+    @Bind(R.id.photo_frame)
+    FrameLayout photoFrame;
+    @Bind(R.id.recyclerView)
+    CoordinatorRecyclerView photoRecyclerView;
+    @Bind(R.id.parent_layout)
+    CoordinatorLinearLayout parentLayout;
+    @Bind(R.id.cropperView)
+    CropperView cropperView;
+    @Bind(R.id.btn_snap)
+    ImageView btnSnap;
+    @Bind(R.id.btn_rotate)
+    ImageView btnRotate;
 
     private ProgressDialog progressDialog;
+    private Map<String, PhotoFolder> folderMap;
+    private PhotoAdapter adapter;
+    private ArrayList<String> mFolderNameList;
+    private PhotoFolder currentFolder;
+    private boolean isSnappedToCenter;
+    private Bitmap mBitmap;
+    private String compressedPath;
 
     @Override
     protected void initView() {
-        progressDialog = new ProgressDialog(this);
-        progressDialog.setMessage(getString(R.string.publishing));
+        progressBar.setVisibility(View.VISIBLE);
+
+        setLayoutSize();
+        initRecyclerView();
+
+        //检查动态权限
+        requestPermission(Manifest.permission.READ_EXTERNAL_STORAGE, CODE_READ);
 
     }
 
-    @Override
-    protected int getLayoutId() {
-        return R.layout.activity_publish;
+
+    private void setLayoutSize() {
+        int topViewHeight = ViewUtils.dip2px(TOP_REMAIN_HEIGHT) + ViewUtils.getScreenWidth();
+        int topBarHeight = ViewUtils.dip2px(TOP_REMAIN_HEIGHT);
+        parentLayout.setTopViewParam(topViewHeight, topBarHeight);
+        photoFrame.getLayoutParams().height = ViewUtils.getScreenWidth();
+        photoRecyclerView.getLayoutParams().height = ViewUtils.getScreenHeight() - topBarHeight;
+        parentLayout.getLayoutParams().height = topViewHeight + ViewUtils.getScreenHeight() - topBarHeight;
+        photoRecyclerView.setCoordinatorListener(parentLayout);
     }
 
-
-    private void publish() {
-        String title = edTitle.getText().toString();
-        String content = edContent.getText().toString();
-        if (TextUtils.isEmpty(title) || TextUtils.isEmpty(content)) {
-            showToast(getString(R.string.cant_null));
-        } else if (title.length() > 20) {
-            showToast(getString(R.string.noMore20));
-        }else {
-            doPublish(title,content);
-        }
-
-    }
-
-    private void doPublish(String title, String content) {
-        progressDialog.show();
-        AVObject circle = new AVObject(CIRCLES);
-        circle.put(POSTER, AVUser.getCurrentUser());
-        circle.put(TITLE,title);
-        circle.put(CONTENT,content);
-        circle.put(COMMENT_NUM,0);
-        circle.put(LIKES_NUM,0);
-        if (mImageBytes_01 != null){
-            circle.put(PIC_1,new AVFile(PIC_1_FILE,mImageBytes_01));
-        }
-        if (mImageBytes_02 != null){
-            circle.put(PIC_2,new AVFile(PIC_2_FILE,mImageBytes_02));
-        }
-        if (mImageBytes_03 != null){
-            circle.put(PIC_3,new AVFile(PIC_3_FILE,mImageBytes_03));
-        }
-        circle.saveInBackground(new SaveCallback() {
+    private void initRecyclerView() {
+        GridLayoutManager gridLayoutManager = new GridLayoutManager(this, 4);
+        gridLayoutManager.setSmoothScrollbarEnabled(true);
+        photoRecyclerView.setLayoutManager(gridLayoutManager);
+        photoRecyclerView.addItemDecoration(new SpacesItemDecoration(getResources().getDimensionPixelOffset(R.dimen.decor_offset), 4));
+        adapter = new PhotoAdapter(this);
+        adapter.setOnItemClickListener(new BaseAdapter.OnItemClickListener() {
             @Override
-            public void done(AVException e) {
-                if (e == null) {
-                    progressDialog.dismiss();
-                    PublishActivity.this.finish();
-                } else {
-                    progressDialog.dismiss();
-                    // TODO: 2017/3/9 处理上传错误的逻辑
-                    Toast.makeText(PublishActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
+            public void onItemClick(int position) {
+                loadPhoto(position);
+            }
+        });
+        photoRecyclerView.setAdapter(adapter);
+    }
+
+    private void loadPhoto(int position) {
+
+        String filePath = currentFolder.getPhotoList().get(position).getPath();
+
+
+        mBitmap = BitmapFactory.decodeFile(filePath);
+        LogUtils.d("loadBitmap: " + mBitmap.getWidth() + " " + mBitmap.getHeight());
+
+        int maxP = Math.max(mBitmap.getWidth(), mBitmap.getHeight());
+        float scale1280 = (float)maxP / 1280;
+
+        if (cropperView.getWidth() != 0) {
+            cropperView.setMaxZoom(cropperView.getWidth() * 2 / 1280f);
+        } else {
+            ViewTreeObserver vto = cropperView.getViewTreeObserver();
+            vto.addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
+                @Override
+                public boolean onPreDraw() {
+                    cropperView.getViewTreeObserver().removeOnPreDrawListener(this);
+                    cropperView.setMaxZoom(cropperView.getWidth() * 2 / 1280f);
+                    return true;
                 }
+            });
+
+        }
+        mBitmap = Bitmap.createScaledBitmap(mBitmap, (int)(mBitmap.getWidth()/scale1280),
+                (int)(mBitmap.getHeight()/scale1280), true);
+        cropperView.setImageBitmap(mBitmap);
+    }
+
+    private void requestPermission(String permission, int code) {
+        if (!isAllowed(permission)) {
+            requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, code);
+        } else {
+            getPhotoFolder();
+        }
+    }
+
+    private void getPhotoFolder() {
+        if (ActivityUtils.isExternalStorageAvailable()) {
+            Toast.makeText(this, "未检测到存储设备", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        Observable.create(new Observable.OnSubscribe<Map<String, PhotoFolder>>() {
+            @Override
+            public void call(Subscriber<? super Map<String, PhotoFolder>> subscriber) {
+                Map<String, PhotoFolder> map = PhotoUtils.getPhotoFolder();
+                if (map == null || map.isEmpty()) {
+                    subscriber.onError(new Throwable("获取图片出错"));
+                } else {
+                    subscriber.onNext(map);
+                    subscriber.onCompleted();
+                }
+            }
+        })
+                .compose(RxTransformer.INSTANCE.<Map<String, PhotoFolder>>transform(lifeCycleSubject))
+                .doOnSubscribe(new Action0() {
+                    @Override
+                    public void call() {
+                        progressBar.setVisibility(View.VISIBLE);
+                    }
+                })
+                .subscribe(new Subscriber<Map<String, PhotoFolder>>() {
+                    @Override
+                    public void onCompleted() {
+                        progressBar.setVisibility(View.GONE);
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        Toast.makeText(PublishActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+
+                    @Override
+                    public void onNext(Map<String, PhotoFolder> folders) {
+                        folderMap = folders;
+                        setSpinner();
+                    }
+                });
+    }
+
+    private void setSpinner() {
+        mFolderNameList = new ArrayList<>(folderMap.keySet());
+        ArrayAdapter adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, mFolderNameList);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        fileSpinner.setAdapter(adapter);
+        fileSpinner.setSelection(0);
+        fileSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                toggleFolder(position);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
             }
         });
 
     }
 
-    private void showToast(String msg) {
-        Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
+    private void toggleFolder(int position) {
+        if (currentFolder != null && TextUtils.equals(currentFolder.getName()
+                , folderMap.get(mFolderNameList.get(position)).getName())) {
+            //当前folder已被选择
+            return;
+        } else {
+            currentFolder = folderMap.get(mFolderNameList.get(position));
+            ;
+            loadPhoto(0);
+            adapter.addAll(currentFolder.getPhotoList());
+        }
     }
+
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        if (requestCode == CODE_READ) {
+            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                getPhotoFolder();
+            } else {
+                Toast.makeText(PublishActivity.this, "您没有授权该权限，请重试并打开授权", Toast.LENGTH_SHORT).show();
+            }
+            return;
+        }
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+    }
+
+    private boolean isAllowed(String permission) {
+        return Build.VERSION.SDK_INT < Build.VERSION_CODES.M ||
+                PackageManager.PERMISSION_GRANTED
+                        == ActivityCompat.checkSelfPermission(this, permission);
+    }
+
+    @Override
+    protected int getLayoutId() {
+        return R.layout.activity_publish_pro;
+    }
+
+
+    private void publish() {
+
+    }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_publish, menu);
-        return super.onCreateOptionsMenu(menu);
+        return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-
         switch (item.getItemId()) {
-            case R.id.action_send:
-                publish();
+            case R.id.action_continue:
+                // TODO: 2017/7/22
                 break;
         }
         return super.onOptionsItemSelected(item);
     }
 
-
-    @OnClick({R.id.pic1, R.id.pic2, R.id.pic3,R.id.tv_delete_pic,R.id.iv_addPic})
+    @OnClick({R.id.btn_snap, R.id.btn_rotate})
     public void onClick(View view) {
         switch (view.getId()) {
-            case R.id.pic1:
-                requestImageBytes(PIC_CODE_01);
+            case R.id.btn_snap:
+                if (isSnappedToCenter) {
+                    cropperView.cropToCenter();
+                } else {
+                    cropperView.fitToCenter();
+                }
+                isSnappedToCenter = !isSnappedToCenter;
                 break;
-            case R.id.pic2:
-                requestImageBytes(PIC_CODE_02);
-                break;
-            case R.id.pic3:
-                requestImageBytes(PIC_CODE_03);
-                break;
-            case R.id.tv_delete_pic:
-                deletePic();
-                break;
-            case R.id.iv_addPic:
+            case R.id.btn_rotate:
+                if (mBitmap == null) {
+                    return;
+                }
+                // TODO:2017/7/30 注意此处可能 OutOfMemoryError
+                mBitmap = BitmapUtils.rotateBitmap(mBitmap, 90);
+                cropperView.setImageBitmap(mBitmap);
                 break;
         }
     }
 
-    private void deletePic() {
-        if (mImageBytes_03 != null){
-            mImageBytes_03 = null;
-            pic3.setImageResource(R.drawable.ic_add);
-        }else if (mImageBytes_02 != null){
-            mImageBytes_02 = null;
-            pic2.setImageResource(R.drawable.ic_add);
-        }else {
-            mImageBytes_01 = null;
-            pic1.setImageResource(R.drawable.ic_add);
-        }
-    }
-
-    private void requestImageBytes(int picCode) {
-        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-        intent.setType("image/*");
-        startActivityForResult(intent, picCode);
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode == RESULT_OK){
-            setImageBitmap(requestCode,data);
-        }
-    }
-
-    private void setImageBitmap(int requestCode,Intent data) {
-        try {
-            switch (requestCode){
-                case PIC_CODE_01:
-                    pic1.setImageBitmap(MediaStore.Images.Media.getBitmap(this.getContentResolver(), data.getData()));
-                    mImageBytes_01 = ActivityUtils.getBytes(getContentResolver().openInputStream(data.getData()));
-                    break;
-                case PIC_CODE_02:
-                    pic2.setImageBitmap(MediaStore.Images.Media.getBitmap(this.getContentResolver(), data.getData()));
-                    mImageBytes_02 = ActivityUtils.getBytes(getContentResolver().openInputStream(data.getData()));
-                    break;
-                case PIC_CODE_03:
-                    pic3.setImageBitmap(MediaStore.Images.Media.getBitmap(this.getContentResolver(), data.getData()));
-                    mImageBytes_03 = ActivityUtils.getBytes(getContentResolver().openInputStream(data.getData()));
-                    break;
+    private void cropImageAsync() {
+        cropperView.getCroppedBitmapAsync(new CropperCallback() {
+            @Override
+            public void onCropped(Bitmap bitmap) {
+                if (bitmap != null) {
+                    compress(bitmap);
+                }
             }
+            @Override
+            public void onOutOfMemoryError() {
+
+            }
+        });
+    }
+
+    private void compress(Bitmap bitmap) {
+        String path = Environment.getExternalStorageDirectory() + "/crop_test.jpg";
+        File file = new File(path);
+        try {
+            BitmapUtils.writeBitmapToFile(bitmap, file, 90);
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
+        Luban.with(PublishActivity.this)
+                .load(file)                     //传人要压缩的图片
+                .setCompressListener(new OnCompressListener() { //设置回调
+                    @Override
+                    public void onStart() {
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        //释放字节数组
-        mImageBytes_03 = null;
-        mImageBytes_02 = null;
-        mImageBytes_01 = null;
+                    }
+                    @Override
+                    public void onSuccess(File file) {
+                        compressedPath = file.getAbsolutePath();
+                        LogUtils.d(compressedPath);
+                        //上传图片
+
+                    }
+                    @Override
+                    public void onError(Throwable e) {
+                        LogUtils.e(e.getMessage());
+                    }
+                })
+                .launch();
+
     }
 }

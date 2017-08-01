@@ -1,6 +1,4 @@
-package com.zyascend.NoBoring.utils;
-
-import com.zyascend.NoBoring.API;
+package com.zyascend.NoBoring.http;
 
 import java.util.concurrent.TimeUnit;
 
@@ -10,6 +8,7 @@ import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 /**
+ *
  * Created by Administrator on 2016/11/24.
  */
 
@@ -46,8 +45,6 @@ public class RetrofitService {
                 .baseUrl(baseUrl)
                 .build().create(apiClass);
     }
-
-
 
 
 }

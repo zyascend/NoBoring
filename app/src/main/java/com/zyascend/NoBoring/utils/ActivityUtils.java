@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.os.Environment;
 import android.os.Parcelable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
@@ -131,6 +132,7 @@ public class ActivityUtils {
     }
 
 
+
     public static String formatDate(Date date) {
 
         long delta = new Date().getTime() - date.getTime();
@@ -184,5 +186,12 @@ public class ActivityUtils {
 
     private static long toYears(long date) {
         return toMonths(date) / 365L;
+    }
+
+    public static boolean isExternalStorageAvailable() {
+        if (Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())) {
+            return true;
+        }
+        return false;
     }
 }

@@ -3,6 +3,7 @@ package com.zyascend.NoBoring.dao;
 import java.util.List;
 
 /**
+ *
  * Created by Administrator on 2016/7/16.
  */
 public class TextJokeResult {

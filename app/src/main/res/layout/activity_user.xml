@@ -1,9 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:background="?cardBackground"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
+
     <android.support.v7.widget.Toolbar
         android:title="@string/my"
         android:id="@+id/toolbar"
@@ -12,180 +15,160 @@
         android:background="?attr/colorPrimary"
         app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>
-    <RelativeLayout
-        android:background="?cardBackground"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-        <ImageView
-            android:layout_margin="15dp"
-            android:src="@mipmap/launcher"
-            android:scaleType="centerCrop"
-            android:id="@+id/iv_headPic"
-            android:layout_width="80dp"
-            android:layout_height="80dp" />
-
-        <TextView
-            android:text="@string/pleaseLogin"
-            android:textSize="20sp"
-            android:textColor="?titleColor"
-            android:id="@+id/tv_userName"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
-            android:layout_toEndOf="@+id/iv_headPic" />
-    </RelativeLayout>
 
     <LinearLayout
-        android:background="?cardBackground"
-        android:orientation="horizontal"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
 
-        <RelativeLayout
-            android:layout_width="0dp"
-            android:layout_weight="1"
-            android:layout_height="wrap_content">
-            <TextView
-                android:text="@string/follow"
-                android:textSize="18sp"
-                android:textColor="?titleColor"
-                android:id="@+id/tv_follow"
-                android:layout_width="wrap_content"
+        <ImageView
+            android:id="@+id/iv_headPic"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:layout_margin="15dp"
+            android:scaleType="centerCrop"
+            android:src="@mipmap/launcher" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_margin="10dp"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_centerInParent="true" />
+                android:layout_marginBottom="10dp"
+                android:layout_marginTop="5dp"
+                android:orientation="horizontal">
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/tv_postCount"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:gravity="center"
+                        android:textColor="?attr/titleColor"
+                        android:textSize="18sp"
+                        android:textStyle="bold"
+                        tools:text="10" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:gravity="center"
+                        android:text="@string/post"
+                        android:textColor="?attr/textColor"
+                        android:textSize="16sp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/tv_followerCount"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:gravity="center"
+                        android:textColor="?attr/titleColor"
+                        android:textSize="18sp"
+                        android:textStyle="bold"
+                        tools:text="10" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:gravity="center"
+                        android:text="@string/follower"
+                        android:textColor="?attr/textColor"
+                        android:textSize="16sp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/tv_followeeCount"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:gravity="center"
+                        android:textColor="?attr/titleColor"
+                        android:textSize="18sp"
+                        android:textStyle="bold"
+                        tools:text="10" />
+
+                    <TextView
+                        android:id="@+id/textView2"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:gravity="center"
+                        android:text="@string/followee"
+                        android:textColor="?attr/textColor"
+                        android:textSize="16sp" />
+                </LinearLayout>
+
+            </LinearLayout>
 
             <TextView
-                android:text="0"
-                android:layout_marginStart="10dp"
-                android:layout_centerVertical="true"
-                android:layout_toEndOf="@+id/tv_follow"
-                android:id="@+id/tv_follow_num"
-                android:textSize="18sp"
-                android:textColor="?textColor"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
-        </RelativeLayout>
-        <RelativeLayout
-            android:layout_width="0dp"
-            android:layout_weight="1"
-            android:layout_height="wrap_content">
-            <TextView
-                android:text="@string/fans"
-                android:textSize="18sp"
-                android:textColor="?titleColor"
-                android:id="@+id/tv_fans"
-                android:layout_width="wrap_content"
+                android:id="@+id/textView"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_centerInParent="true" />
-
-            <TextView
-                android:text="0"
+                android:layout_gravity="center_horizontal|bottom"
+                android:layout_marginEnd="10dp"
                 android:layout_marginStart="10dp"
-                android:layout_centerVertical="true"
-                android:layout_toEndOf="@+id/tv_fans"
-                android:id="@+id/tv_fans_num"
-                android:textSize="18sp"
-                android:textColor="?textColor"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
-        </RelativeLayout>
+                android:background="@drawable/bg_btn_round"
+                android:gravity="center"
+                android:text="@string/editProfile"
+                android:textColor="@color/white" />
+        </LinearLayout>
+
     </LinearLayout>
+
     <!--作为divider的View-->
     <View
         android:background="?containerBackground"
         android:layout_width="match_parent"
-        android:layout_height="30dp" />
+        android:layout_height="20dp" />
     <LinearLayout
-        android:background="?cardBackground"
-        android:id="@+id/ll_userInfo"
+        android:padding="10dp"
         android:orientation="horizontal"
         android:layout_width="match_parent"
-        android:layout_height="50dp">
+        android:layout_height="wrap_content">
         <ImageView
-            android:src="@drawable/ic_person"
-            android:layout_marginStart="20dp"
-            android:layout_gravity="center_vertical"
+            android:id="@+id/btn_grid"
+            android:src="@drawable/ic_grid_24dp"
             android:layout_width="0dp"
             android:layout_weight="1"
             android:layout_height="wrap_content" />
-        <TextView
-            android:id="@+id/tv_info"
-            android:layout_gravity="center_vertical"
-            android:layout_marginStart="20dp"
-            android:text="@string/myInfo"
-            android:textColor="?titleColor"
-            android:textSize="20sp"
+        <ImageView
+            android:id="@+id/btn_List"
+            android:src="@drawable/ic_list_24dp"
             android:layout_width="0dp"
-            android:layout_weight="11"
+            android:layout_weight="1"
             android:layout_height="wrap_content" />
+    </LinearLayout>
 
-    </LinearLayout>
-    <LinearLayout
-        android:background="?cardBackground"
-        android:id="@+id/ll_circles"
-        android:orientation="horizontal"
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/recyclerView"
         android:layout_width="match_parent"
-        android:layout_height="50dp">
-        <ImageView
-            android:src="@drawable/ic_circles"
-            android:layout_marginStart="20dp"
-            android:layout_gravity="center_vertical"
-            android:layout_width="0dp"
-            android:layout_weight="1"
-            android:layout_height="wrap_content" />
-        <TextView
-            android:id="@+id/tv_circle"
-            android:layout_gravity="center_vertical"
-            android:layout_marginStart="20dp"
-            android:text="@string/myCircle"
-            android:textColor="?titleColor"
-            android:textSize="20sp"
-            android:layout_width="0dp"
-            android:layout_weight="10"
-            android:layout_height="wrap_content" />
-        <TextView
-            android:id="@+id/tv_circles_num"
-            android:layout_gravity="center_vertical"
-            android:layout_marginStart="20dp"
-            android:text="0"
-            android:textColor="?textColor"
-            android:textSize="20sp"
-            android:layout_width="0dp"
-            android:layout_weight="1"
-            android:layout_height="wrap_content" />
-    </LinearLayout>
-    <LinearLayout
-        android:background="?cardBackground"
-        android:id="@+id/ll_likes"
-        android:orientation="horizontal"
-        android:layout_width="match_parent"
-        android:layout_height="50dp">
-        <ImageView
-            android:src="@drawable/ic_likes_24dp"
-            android:layout_marginStart="20dp"
-            android:layout_gravity="center_vertical"
-            android:layout_width="0dp"
-            android:layout_weight="1"
-            android:layout_height="wrap_content" />
-        <TextView
-            android:id="@+id/tv_likes"
-            android:layout_gravity="center_vertical"
-            android:layout_marginStart="20dp"
-            android:text="@string/myLikes"
-            android:textColor="?titleColor"
-            android:textSize="20sp"
-            android:layout_width="0dp"
-            android:layout_weight="10"
-            android:layout_height="wrap_content" />
-        <TextView
-            android:id="@+id/tv_likes_num"
-            android:layout_gravity="center_vertical"
-            android:layout_marginStart="20dp"
-            android:text="0"
-            android:textColor="?textColor"
-            android:textSize="20sp"
-            android:layout_width="0dp"
-            android:layout_weight="1"
-            android:layout_height="wrap_content" />
-    </LinearLayout>
+        android:layout_height="match_parent"/>
+
+    <include layout="@layout/view_empty"/>
 </LinearLayout>

@@ -11,4 +11,9 @@ public class NextEvent {
     public NextEvent(int next) {
         this.next = next;
     }
+
+    @Override
+    public String toString() {
+        return String.valueOf(this.next);
+    }
 }

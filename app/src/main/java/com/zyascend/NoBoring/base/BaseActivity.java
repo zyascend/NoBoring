@@ -9,18 +9,17 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
 import android.view.WindowManager;
 
 import com.squareup.leakcanary.RefWatcher;
 import com.zyascend.NoBoring.R;
-import com.zyascend.NoBoring.utils.LifeCycleEvent;
+import com.zyascend.NoBoring.utils.rx.LifeCycleEvent;
 
 import butterknife.ButterKnife;
 import rx.subjects.PublishSubject;
 
 /**
+ *
  * Created by Administrator on 2016/7/13.
  */
 public abstract class BaseActivity extends AppCompatActivity {
@@ -44,6 +43,7 @@ public abstract class BaseActivity extends AppCompatActivity {
         }else {
             setTheme(R.style.AppTheme_day);
         }
+
         lifeCycleSubject.onNext(LifeCycleEvent.CREATE);
         super.onCreate(savedInstanceState);
         saveState = savedInstanceState;

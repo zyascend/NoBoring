@@ -1,4 +1,4 @@
-package com.zyascend.NoBoring.utils;
+package com.zyascend.NoBoring.utils.rx;
 
 import android.text.TextUtils;
 import android.util.Log;
@@ -6,6 +6,7 @@ import android.util.Log;
 import com.zyascend.NoBoring.base.BaseFlatMap;
 import com.zyascend.NoBoring.dao.BudejieVideo;
 import com.zyascend.NoBoring.dao.BudejieVideoResult;
+import com.zyascend.NoBoring.utils.DaoUtils;
 
 import java.util.ArrayList;
 import java.util.List;

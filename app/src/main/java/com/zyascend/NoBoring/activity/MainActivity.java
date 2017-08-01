@@ -2,10 +2,10 @@ package com.zyascend.NoBoring.activity;
 
 
 import android.content.Intent;
-import android.net.Uri;
-import android.os.Bundle;
 import android.support.annotation.IdRes;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -24,10 +24,6 @@ import android.widget.Toast;
 import com.avos.avoscloud.AVUser;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import com.google.android.gms.appindexing.Action;
-import com.google.android.gms.appindexing.AppIndex;
-import com.google.android.gms.appindexing.Thing;
-import com.google.android.gms.common.api.GoogleApiClient;
 import com.roughike.bottombar.BottomBar;
 import com.roughike.bottombar.OnTabReselectListener;
 import com.roughike.bottombar.OnTabSelectListener;
@@ -41,23 +37,26 @@ import com.zyascend.NoBoring.fragment.ShiPinFragment;
 
 import com.zyascend.NoBoring.utils.ActivityUtils;
 import com.zyascend.NoBoring.utils.CacheCleanUtils;
-import com.zyascend.NoBoring.utils.CircleTransform;
+import com.zyascend.NoBoring.utils.glide.CircleTransform;
 import com.zyascend.NoBoring.utils.rxbus.DateEvent;
 import com.zyascend.NoBoring.utils.rxbus.NextEvent;
 import com.zyascend.NoBoring.utils.rxbus.RxBus;
 import com.zyascend.NoBoring.utils.rxbus.RxBusSubscriber;
 import com.zyascend.NoBoring.utils.rxbus.RxSubscriptions;
 import com.zyascend.NoBoring.utils.SPUtils;
-import com.zyascend.NoBoring.utils.view.CircleDrawale;
 
 import butterknife.Bind;
 import rx.Subscription;
 
-import static com.zyascend.NoBoring.utils.AVObjectKeysInterface.HEAD_PIC;
 
 public class MainActivity extends BaseActivity
         implements NavigationView.OnNavigationItemSelectedListener, OnTabSelectListener, OnTabReselectListener, View.OnClickListener {
     private static final String TAG = "TAG_MainActivity";
+    private static final String FRAG_TAG_QUWEN = "tag_quwen";
+    private static final String FRAG_TAG_DUANZI = "tag_duanzi";
+    private static final String FRAG_TAG_GIRL = "tag_girl";
+    private static final String FRAG_TAG_SHIPING = "tag_shiping";
+    private static final String FRAG_TAG_COMMUNITY = "tag_commu";
 
     @Bind(R.id.nav_view)
     NavigationView navView;
@@ -87,7 +86,7 @@ public class MainActivity extends BaseActivity
 
     @Override
     protected void initView() {
-        subscribleEvent();
+        subscribeEvent();
         setDrawer();
         loadFragment();
 //        checkIfUpdate();
@@ -148,19 +147,21 @@ public class MainActivity extends BaseActivity
 
         userHeadPic.setOnClickListener(this);
         userName.setOnClickListener(this);
-        AVUser user= AVUser.getCurrentUser();
-        if (user != null){
-            userName.setText(user.getUsername());
 
-            String picUrl = user.getAVFile(HEAD_PIC) == null ? null : user.getAVFile(HEAD_PIC).getUrl();
-            if (!TextUtils.isEmpty(picUrl)){
-                Glide.with(this)
-                        .load(picUrl)
-                        .diskCacheStrategy(DiskCacheStrategy.RESULT)
-                        .transform(new CircleTransform(this))
-                        .into(userHeadPic);
-            }
+        String name = SPUtils.getString(SPUtils.USER_NAME,null);
+        if (name != null){
+            userName.setText(name);
         }
+
+        String avatarUrl = SPUtils.getString(SPUtils.AVATAR_URL,null);
+        if (avatarUrl != null){
+            Glide.with(this)
+                    .load(avatarUrl)
+                    .transform(new CircleTransform(this))
+                    .diskCacheStrategy(DiskCacheStrategy.SOURCE)
+                    .into(userHeadPic);
+        }
+
     }
 
     private void restartActivity() {
@@ -170,15 +171,10 @@ public class MainActivity extends BaseActivity
 
     private void switchNightMode(boolean isChecked) {
         if (isChecked) {
-            //turn on night mode
             ChangeToNight();
-//            Toast.makeText(MainActivity.this, "Night Mode On!!!", Toast.LENGTH_SHORT).show();
         } else {
-            //turn off night mode
             ChangeToDay();
-//            Toast.makeText(MainActivity.this, "Night Mode Off!!!", Toast.LENGTH_SHORT).show();
         }
-//        recreateOnResume();
         this.finish();
         this.startActivity(new Intent(this, MainActivity.class));
     }
@@ -204,24 +200,27 @@ public class MainActivity extends BaseActivity
     public void loadFragment() {
         setToolbarTitle("段子");
         if (saveState == null) {
-
+            duanziFragment = new DuanziFragment();
+            girlFragment = new GirlFragment();
+            shipinFragment = new ShiPinFragment();
+            quwenFragment = new QuwenFragment();
+            communityFragment = new CommunityFragment();
+            getSupportFragmentManager().beginTransaction()
+                    .add(R.id.fragmentContent, quwenFragment,FRAG_TAG_QUWEN)
+                    .add(R.id.fragmentContent, duanziFragment,FRAG_TAG_DUANZI)
+                    .add(R.id.fragmentContent, girlFragment,FRAG_TAG_GIRL)
+                    .add(R.id.fragmentContent, shipinFragment,FRAG_TAG_SHIPING)
+                    .add(R.id.fragmentContent, communityFragment,FRAG_TAG_COMMUNITY)
+                    .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
+                    .commit();
+        }else {
+            FragmentManager manager = getSupportFragmentManager();
+            duanziFragment = (DuanziFragment) manager.findFragmentByTag(FRAG_TAG_DUANZI);
+            girlFragment = (GirlFragment) manager.findFragmentByTag(FRAG_TAG_GIRL);
+            shipinFragment = (ShiPinFragment) manager.findFragmentByTag(FRAG_TAG_SHIPING);
+            quwenFragment = (QuwenFragment) manager.findFragmentByTag(FRAG_TAG_QUWEN);
+            communityFragment = (CommunityFragment) manager.findFragmentByTag(FRAG_TAG_COMMUNITY);
         }
-
-        duanziFragment = new DuanziFragment();
-        girlFragment = new GirlFragment();
-        shipinFragment = new ShiPinFragment();
-        quwenFragment = new QuwenFragment();
-        communityFragment = new CommunityFragment();
-
-
-        getSupportFragmentManager().beginTransaction()
-                .add(R.id.fragmentContent, quwenFragment)
-                .add(R.id.fragmentContent, duanziFragment)
-                .add(R.id.fragmentContent, girlFragment)
-                .add(R.id.fragmentContent, shipinFragment)
-                .add(R.id.fragmentContent, communityFragment)
-                .commit();
-
         bottomBar.setOnTabSelectListener(this);
         bottomBar.setOnTabReselectListener(this);
     }
@@ -242,11 +241,12 @@ public class MainActivity extends BaseActivity
                 break;
             case R.id.menu_exit:
                 //退出登录
-                AVUser.getCurrentUser().logOut();
-                startActivity(new Intent(MainActivity.this, LoginActivity.class));
+                SPUtils.putString(null,SPUtils.SESSION_TOKEN);
+                Intent intent1 = new Intent(MainActivity.this, LoginActivity.class);
+                intent1.putExtra(LoginActivity.FROM_EXIT_LOGIN,true);
+                startActivity(intent1);
                 MainActivity.this.finish();
                 break;
-
         }
         drawerLayout.closeDrawer(GravityCompat.START);
         return true;
@@ -261,15 +261,18 @@ public class MainActivity extends BaseActivity
     }
 
 
+
     @Override
     public void onTabSelected(@IdRes int tabId) {
         if (isAnyFragmentNull()) return;
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+
         toggleNextMenuItem(false);
         switch (tabId) {
             case R.id.tab_quwen:
                 setToolbarTitle("趣闻");
-                getSupportFragmentManager().beginTransaction()
-                        .show(quwenFragment)
+                transaction.show(quwenFragment)
                         .hide(duanziFragment)
                         .hide(shipinFragment)
                         .hide(girlFragment)
@@ -278,8 +281,7 @@ public class MainActivity extends BaseActivity
                 break;
             case R.id.tab_duanzi:
                 setToolbarTitle("段子");
-                getSupportFragmentManager().beginTransaction()
-                        .show(duanziFragment)
+                transaction.show(duanziFragment)
                         .hide(quwenFragment)
                         .hide(shipinFragment)
                         .hide(girlFragment)
@@ -288,8 +290,7 @@ public class MainActivity extends BaseActivity
                 break;
             case R.id.tab_shipin:
                 setToolbarTitle("视频");
-                getSupportFragmentManager().beginTransaction()
-                        .show(shipinFragment)
+                transaction.show(shipinFragment)
                         .hide(quwenFragment)
                         .hide(duanziFragment)
                         .hide(girlFragment)
@@ -298,8 +299,7 @@ public class MainActivity extends BaseActivity
                 break;
             case R.id.tab_qutu:
                 setToolbarTitle("美图");
-                getSupportFragmentManager().beginTransaction()
-                        .show(girlFragment)
+                transaction.show(girlFragment)
                         .hide(quwenFragment)
                         .hide(shipinFragment)
                         .hide(duanziFragment)
@@ -308,8 +308,7 @@ public class MainActivity extends BaseActivity
                 break;
             case R.id.tab_community:
                 setToolbarTitle("发现");
-                getSupportFragmentManager().beginTransaction()
-                        .show(communityFragment)
+                transaction.show(communityFragment)
                         .hide(quwenFragment)
                         .hide(shipinFragment)
                         .hide(duanziFragment)
@@ -365,7 +364,7 @@ public class MainActivity extends BaseActivity
         if (needInvalidate) invalidateOptionsMenu();
     }
 
-    private void subscribleEvent() {
+    private void subscribeEvent() {
         if (mRxSubSticky != null && !mRxSubSticky.isUnsubscribed()) {
             RxSubscriptions.remove(mRxSubSticky);
         } else {
@@ -397,13 +396,13 @@ public class MainActivity extends BaseActivity
 
     @Override
     public void onClick(View v) {
-        Toast.makeText(this, "dianjile.....", Toast.LENGTH_SHORT).show();
         switch (v.getId()){
             case R.id.ivProfilePic:
             case R.id.tv_userName:
-                if (AVUser.getCurrentUser() == null){
+                if (SPUtils.getString(SPUtils.SESSION_TOKEN,null) == null){
                     //跳转到登录界面
-                    ActivityUtils.jumpTo(this,LoginActivity.class);
+                    Intent intent = new Intent(MainActivity.this,LoginActivity.class);
+                    startActivity(intent);
                     MainActivity.this.finish();
                 }else {
                     //跳转到用户界面

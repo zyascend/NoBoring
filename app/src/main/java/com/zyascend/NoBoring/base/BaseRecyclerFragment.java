@@ -27,7 +27,7 @@ public abstract class BaseRecyclerFragment<T extends RecyclerArrayAdapter> exten
         return recyclerView;
     }
 
-    @Bind(R.id.recyclerview)
+    @Bind(R.id.recyclerView)
     EasyRecyclerView recyclerView;
     @Bind(R.id.ll_error)
     LinearLayout llError;
