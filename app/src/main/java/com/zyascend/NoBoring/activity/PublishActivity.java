@@ -109,7 +109,7 @@ public class PublishActivity extends BaseActivity {
     }
 
     private void initRecyclerView() {
-        GridLayoutManager gridLayoutManager = new GridLayoutManager(this, 4);
+        GridLayoutManager gridLayoutManager = new GridLayoutManager(this, 3);
         gridLayoutManager.setSmoothScrollbarEnabled(true);
         photoRecyclerView.setLayoutManager(gridLayoutManager);
         photoRecyclerView.addItemDecoration(new SpacesItemDecoration(getResources().getDimensionPixelOffset(R.dimen.decor_offset), 4));
@@ -127,8 +127,12 @@ public class PublishActivity extends BaseActivity {
 
         String filePath = currentFolder.getPhotoList().get(position).getPath();
 
-
         mBitmap = BitmapFactory.decodeFile(filePath);
+        if (mBitmap == null){
+            Toast.makeText(this, "加载图片出错", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         LogUtils.d("loadBitmap: " + mBitmap.getWidth() + " " + mBitmap.getHeight());
 
         int maxP = Math.max(mBitmap.getWidth(), mBitmap.getHeight());
@@ -162,7 +166,7 @@ public class PublishActivity extends BaseActivity {
     }
 
     private void getPhotoFolder() {
-        if (ActivityUtils.isExternalStorageAvailable()) {
+        if (!ActivityUtils.isExternalStorageAvailable()) {
             Toast.makeText(this, "未检测到存储设备", Toast.LENGTH_SHORT).show();
             return;
         }
@@ -210,7 +214,7 @@ public class PublishActivity extends BaseActivity {
         ArrayAdapter adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, mFolderNameList);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         fileSpinner.setAdapter(adapter);
-        fileSpinner.setSelection(0);
+        fileSpinner.setSelection(mFolderNameList.indexOf("所有图片"));
         fileSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -226,16 +230,11 @@ public class PublishActivity extends BaseActivity {
     }
 
     private void toggleFolder(int position) {
-        if (currentFolder != null && TextUtils.equals(currentFolder.getName()
-                , folderMap.get(mFolderNameList.get(position)).getName())) {
-            //当前folder已被选择
-            return;
-        } else {
-            currentFolder = folderMap.get(mFolderNameList.get(position));
-            ;
-            loadPhoto(0);
-            adapter.addAll(currentFolder.getPhotoList());
-        }
+
+        currentFolder = folderMap.get(mFolderNameList.get(position));
+        loadPhoto(0);
+
+        adapter.addAll(currentFolder.getPhotoList());
     }
 
 

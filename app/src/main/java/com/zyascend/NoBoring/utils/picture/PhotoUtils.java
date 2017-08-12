@@ -3,10 +3,12 @@ package com.zyascend.NoBoring.utils.picture;
 import android.database.Cursor;
 import android.net.Uri;
 import android.provider.MediaStore;
+import android.util.Log;
 
 import com.zyascend.NoBoring.base.BaseApplication;
 import com.zyascend.NoBoring.dao.Photo;
 import com.zyascend.NoBoring.dao.PhotoFolder;
+import com.zyascend.NoBoring.utils.LogUtils;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -48,19 +50,22 @@ public class PhotoUtils {
                 .getColumnIndex(MediaStore.Images.Media.DATA);
         if (cursor.moveToFirst()){
             do {
+                LogUtils.d("gettttttttt");
                 // 获取图片路径
                 String path = cursor.getString(pathIndex);
                 // 获取图片父路径
                 // 获取该图片的父路径名
                 File parentFile = new File(path).getParentFile();
                 if (parentFile == null) {
+                    LogUtils.d("parent null");
                     continue;
                 }
                 String dirPath = parentFile.getAbsolutePath();
-
-                if (res.containsKey(dirPath)) {
+                String fileFolderName = parentFile.getName();
+                if (res.containsKey(fileFolderName)) {
+                    LogUtils.d("parent null");
                     Photo photo = new Photo(path);
-                    PhotoFolder photoFolder = res.get(dirPath);
+                    PhotoFolder photoFolder = res.get(fileFolderName);
                     photoFolder.getPhotoList().add(photo);
                     res.get(allKey).getPhotoList().add(photo);
                 } else {
@@ -71,12 +76,20 @@ public class PhotoUtils {
                     photoFolder.setPhotoList(photoList);
                     photoFolder.setDirPath(dirPath);
                     photoFolder.setName(dirPath.substring(dirPath.lastIndexOf(File.separator) + 1, dirPath.length()));
-                    res.put(dirPath, photoFolder);
+                    res.put(fileFolderName, photoFolder);
                     res.get(allKey).getPhotoList().add(photo);
                 }
             }while (cursor.moveToNext());
         }
         cursor.close();
+        LogUtils.d("call");
+        for (HashMap.Entry<String,PhotoFolder> e : res.entrySet()){
+            String name = e.getKey();
+            LogUtils.d("call for");
+            List fl = e.getValue().getPhotoList();
+            LogUtils.d(name + " has "+fl.size() +" pics");
+        }
+
         return res;
     }
 }

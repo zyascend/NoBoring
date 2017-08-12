@@ -10,14 +10,16 @@ import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
+
+import android.view.View;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import com.jude.easyrecyclerview.EasyRecyclerView;
 import com.zyascend.NoBoring.R;
 import com.zyascend.NoBoring.adapter.UserPostAdapter;
 import com.zyascend.NoBoring.base.BaseActivity;
@@ -32,7 +34,6 @@ import com.zyascend.NoBoring.http.RequestHelper;
 import com.zyascend.NoBoring.utils.ActivityUtils;
 import com.zyascend.NoBoring.utils.LogUtils;
 import com.zyascend.NoBoring.utils.glide.CircleTransform;
-import com.zyascend.NoBoring.utils.Constants;
 import com.zyascend.NoBoring.utils.rx.RxTransformer;
 import com.zyascend.NoBoring.utils.SPUtils;
 import com.zyascend.NoBoring.utils.view.CircleDrawale;
@@ -44,9 +45,7 @@ import java.util.List;
 import java.util.Map;
 
 import butterknife.Bind;
-import rx.Observable;
 import rx.Subscriber;
-import rx.functions.Action1;
 
 /**
  *
@@ -79,6 +78,8 @@ public class UserActivity extends BaseActivity{
     RecyclerView recyclerView;
     @Bind(R.id.view_empty)
     RelativeLayout viewEmpty;
+    @Bind(R.id.ll_parent)
+    LinearLayout userParent;
 
     private boolean logined;
     private String sessionToken;
@@ -102,7 +103,8 @@ public class UserActivity extends BaseActivity{
         recyclerView.setAdapter(adapter);
 
         sessionToken = SPUtils.getString(SPUtils.SESSION_TOKEN,null);
-        userId = getIntent().getStringExtra(USER_ID);
+        userId = getIntent().getStringExtra(USER_ID);                viewEmpty.setVisibility(View.VISIBLE);
+        viewEmpty.setVisibility(View.VISIBLE);
         if (TextUtils.isEmpty(userId)){
             //打开个人页
             if (TextUtils.isEmpty(sessionToken)){
@@ -110,6 +112,7 @@ public class UserActivity extends BaseActivity{
                 LogUtils.d("未登录");
                 logined = false;
                 tvOperate.setText("点击登录");
+                progressDialog.dismiss();
             }else {
                 //已登录
                 LogUtils.d("token = "+sessionToken);
@@ -123,6 +126,20 @@ public class UserActivity extends BaseActivity{
             tvOperate.setText("关注");
             loadUserData();
         }
+
+        setAppBar();
+    }
+
+    private void setAppBar() {
+        appbar.addOnOffsetChangedListener(new AppBarLayout.OnOffsetChangedListener() {
+            @Override
+            public void onOffsetChanged(AppBarLayout appBarLayout, int verticalOffset) {
+                LogUtils.d( "onOffsetChanged: "+verticalOffset);
+                //0为透明，255表示不透明
+                int alpha = 255-verticalOffset >= 0 ? 255-verticalOffset : 0;
+                userParent.setAlpha(alpha);
+            }
+        });
     }
 
     private void loadLoginedData() {
