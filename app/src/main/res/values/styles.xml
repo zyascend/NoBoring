@@ -55,6 +55,8 @@
         <item name="bottomInActive">@color/bottomInActive_day</item>
         <item name="bottomActive">@color/bottomActive_day</item>
         <item name="bottomBackground">@color/bottomBackground_day</item>
+        <item name="downloadDrawable">@drawable/ic_file_download</item>
+
     </style>
     
     <!-- 夜间模式 -->
@@ -72,6 +74,8 @@
         <item name="cardBackground">@color/card_night</item>
         <item name="tabColor">@color/tab_night</item>
         <item name="headerImage">@drawable/drawer_night</item>
+        <item name="downloadDrawable">@drawable/ic_download</item>
+
     </style>
     
     <style name="NormalCard">

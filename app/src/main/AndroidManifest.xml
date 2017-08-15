@@ -37,6 +37,7 @@
         <activity android:name=".activity.BaseDetailActivity"/>
         <activity android:name=".activity.LoginActivity"/>
         <activity android:name=".activity.PublishActivity"/>
+        <activity android:name=".activity.DownLoadActivity"/>
         <!--<activity android:name=".activity.UserActivity"/>-->
 
 

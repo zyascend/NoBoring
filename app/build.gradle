@@ -56,4 +56,8 @@ dependencies {
     compile ('cn.leancloud.android:avoscloud-sdk:v3.+')
     // LeanCloud 统计包
     compile ('cn.leancloud.android:avoscloud-statistics:v3.+')
+
+
+    compile 'com.lzy.net:okgo:3.0.4'
+    compile 'com.lzy.net:okserver:2.0.5'
 }

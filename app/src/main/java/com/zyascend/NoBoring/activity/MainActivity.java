@@ -247,6 +247,10 @@ public class MainActivity extends BaseActivity
                 startActivity(intent1);
                 MainActivity.this.finish();
                 break;
+            case R.id.menu_download:
+                Intent intent2 = new Intent(this, DownLoadActivity.class);
+                startActivity(intent2);
+                break;
         }
         drawerLayout.closeDrawer(GravityCompat.START);
         return true;

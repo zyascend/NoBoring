@@ -4,6 +4,7 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
@@ -12,14 +13,15 @@ import com.jude.easyrecyclerview.adapter.BaseViewHolder;
 import com.jude.easyrecyclerview.adapter.RecyclerArrayAdapter;
 import com.zyascend.NoBoring.R;
 import com.zyascend.NoBoring.dao.BudejieVideo;
+import com.zyascend.NoBoring.utils.DownloadUtils;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import fm.jiecao.jcvideoplayer_lib.JCVideoPlayer;
 import fm.jiecao.jcvideoplayer_lib.JCVideoPlayerStandard;
 
 /**
- *
  * Created by Administrator on 2016/11/26.
  */
 
@@ -38,14 +40,21 @@ public class VideoAdapter extends RecyclerArrayAdapter<BudejieVideo> {
         return new VideoHolder(view);
     }
 
+
+
     class VideoHolder extends BaseViewHolder<BudejieVideo> {
         @Bind(R.id.player)
         JCVideoPlayerStandard player;
         @Bind(R.id.tv_title)
         TextView tvTitle;
+        @Bind(R.id.btn_download)
+        ImageButton btnDownload;
+        private String url;
+        private BudejieVideo data;
+
         public VideoHolder(View view) {
             super(view);
-            ButterKnife.bind(this,view);
+            ButterKnife.bind(this, view);
         }
 
 
@@ -53,11 +62,11 @@ public class VideoAdapter extends RecyclerArrayAdapter<BudejieVideo> {
         public void setData(BudejieVideo data) {
             super.setData(data);
 
-            if (data == null){
+            if (data == null) {
                 return;
             }
-
-            player.setUp(data.getVideoUrl(), JCVideoPlayer.SCREEN_LAYOUT_LIST,"");
+            this.data = data;
+            player.setUp(url, JCVideoPlayer.SCREEN_LAYOUT_LIST, "");
             tvTitle.setText(data.getTitle());
             Glide.with(getContext())
                     .load(data.getThumbUrl())
@@ -65,5 +74,11 @@ public class VideoAdapter extends RecyclerArrayAdapter<BudejieVideo> {
                     .diskCacheStrategy(DiskCacheStrategy.ALL)
                     .into(player.thumbImageView);
         }
+
+        @OnClick(R.id.btn_download)
+        public void onClick() {
+            DownloadUtils.startDownload(getContext(),data);
+        }
+
     }
 }

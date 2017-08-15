@@ -6,6 +6,8 @@
 
     <item android:title="@string/action_settings">
         <menu>
+
+
             <item
                 android:id="@+id/menu_noPic"
                 android:icon="@drawable/ic_photo"
@@ -21,6 +23,11 @@
 
     <item android:title="其他">
         <menu>
+            <item
+                android:id="@+id/menu_download"
+                android:icon="@drawable/ic_file_download"
+                android:title="@string/download"/>
+
             <item
                 android:id="@+id/menu_cache"
                 android:icon="@drawable/ic_cache"

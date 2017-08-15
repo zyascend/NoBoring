@@ -13,4 +13,5 @@
     <attr name="bottomBackground" format="reference"/>
     <!--为了给图片设值tag-->
     <item name="imageid" type="id"/>
+    <item name="downloadDrawable" format="reference"/>
 </resources>
