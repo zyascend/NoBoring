@@ -7,56 +7,46 @@
     android:background="?cardBackground"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
+
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
+
         <ImageView
             android:id="@+id/iv_person"
-            android:src="@drawable/ic_person"
             android:layout_width="30dp"
-            android:layout_height="30dp" />
+            android:layout_height="30dp"
+            android:src="@drawable/ic_person" />
+
         <TextView
             android:id="@+id/tv_user"
-            tools:text="DDDDD"
-            android:textColor="?textColor"
-            android:textSize="15sp"
-            android:layout_toEndOf="@+id/iv_person"
-            android:layout_marginStart="5dp"
-            android:lines="1"
-            android:maxLength="100"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-        <TextView
-            android:id="@+id/tv_updateAt"
-            android:layout_marginTop="5dp"
-            android:layout_below="@+id/tv_user"
-            tools:text="一分钟前"
-            android:textColor="?textColor"
-            android:textSize="13sp"
-            android:layout_toEndOf="@+id/iv_person"
-            android:layout_marginStart="5dp"
-            android:lines="1"
-            android:maxLength="100"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-
-
-
-        <TextView
-            android:id="@+id/tv_likes"
-            android:drawableEnd="@drawable/ic_likes"
-            android:drawablePadding="5dp"
-            android:text="@string/num_zero"
-            android:gravity="center_vertical"
-            android:textSize="15sp"
-            android:textColor="?textColor"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentTop="true"
-            android:layout_marginEnd="5dp"
-            android:layout_alignParentEnd="true" />
+            android:layout_marginStart="5dp"
+            android:layout_toEndOf="@+id/iv_person"
+            android:lines="1"
+            android:maxLength="100"
+            android:textColor="?textColor"
+            android:textSize="15sp"
+            tools:text="DDDDD" />
+
+        <TextView
+            android:id="@+id/tv_updateAt"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/tv_user"
+            android:layout_marginStart="5dp"
+            android:layout_marginTop="5dp"
+            android:layout_toEndOf="@+id/iv_person"
+            android:lines="1"
+            android:maxLength="100"
+            android:textColor="?textColor"
+            android:textSize="13sp"
+            tools:text="一分钟前" />
+
 
     </RelativeLayout>
+
     <TextView
         android:id="@+id/tv_content"
         android:layout_marginStart="30dp"
