@@ -15,6 +15,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.avos.avoscloud.AVAnalytics;
+import com.avos.avoscloud.AVException;
+import com.avos.avoscloud.AVUser;
+import com.avos.avoscloud.LogInCallback;
 import com.zyascend.NoBoring.R;
 import com.zyascend.NoBoring.base.BaseActivity;
 import com.zyascend.NoBoring.bean.LoginResponse;
@@ -256,43 +259,53 @@ public class LoginActivity extends BaseActivity implements TextView.OnEditorActi
             focusView.requestFocus();
         } else {
             showProgress(true);
-
-            LeanCloudService.getInstance().getAPI()
-                    .login(RequestHelper.getLoginBody(username,password))
-                    .compose(RxTransformer.INSTANCE.<LoginResponse>transform(lifeCycleSubject))
-                    .map(new Func1<LoginResponse, String>() {
-                        @Override
-                        public String call(LoginResponse loginResponse) {
-                            if (loginResponse == null){
-                                return "登录失败";
-                            }
-                            SPUtils.putUserInfo(loginResponse);
-                            return "登录成功";
-                        }
-                    }).subscribe(new Subscriber<String>() {
+            AVUser.logInInBackground(username, password, new LogInCallback<AVUser>() {
                 @Override
-                public void onCompleted() {
-
-                }
-
-                @Override
-                public void onError(Throwable e) {
-                    LogUtils.e(e.getMessage());
-                    progressDialog.dismiss();
-                }
-
-                @Override
-                public void onNext(String s) {
-                    if ("登录成功".equals(s)) {
+                public void done(AVUser avUser, AVException e) {
+                    if (e == null){
                         startActivity(new Intent(LoginActivity.this, MainActivity.class));
                         LoginActivity.this.finish();
-                    } else {
-                        // 失败的原因可能有多种，常见的是用户名已经存在。
-                        showProgress(false);
-                        Toast.makeText(LoginActivity.this, s, Toast.LENGTH_SHORT).show();
+                    }else {
+                        Toast.makeText(LoginActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
                     }
                 }
             });
+//            LeanCloudService.getInstance().getAPI()
+//                    .login(RequestHelper.getLoginBody(username,password))
+//                    .compose(RxTransformer.INSTANCE.<LoginResponse>transform(lifeCycleSubject))
+//                    .map(new Func1<LoginResponse, String>() {
+//                        @Override
+//                        public String call(LoginResponse loginResponse) {
+//                            if (loginResponse == null){
+//                                return "登录失败";
+//                            }
+//                            SPUtils.putUserInfo(loginResponse);
+//                            return "登录成功";
+//                        }
+//                    }).subscribe(new Subscriber<String>() {
+//                @Override
+//                public void onCompleted() {
+//
+//                }
+//
+//                @Override
+//                public void onError(Throwable e) {
+//                    LogUtils.e(e.getMessage());
+//                    progressDialog.dismiss();
+//                }
+//
+//                @Override
+//                public void onNext(String s) {
+//                    if ("登录成功".equals(s)) {
+//                        startActivity(new Intent(LoginActivity.this, MainActivity.class));
+//                        LoginActivity.this.finish();
+//                    } else {
+//                        // 失败的原因可能有多种，常见的是用户名已经存在。
+//                        showProgress(false);
+//                        Toast.makeText(LoginActivity.this, s, Toast.LENGTH_SHORT).show();
+//                    }
+//                }
+//            });
 
         }
     }

@@ -7,11 +7,9 @@
     android:background="?cardBackground"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
-
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
-
         <ImageView
             android:id="@+id/iv_person"
             android:layout_width="30dp"
@@ -19,6 +17,7 @@
             android:src="@drawable/ic_person" />
 
         <TextView
+            android:layout_centerVertical="true"
             android:id="@+id/tv_user"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -31,13 +30,10 @@
             tools:text="DDDDD" />
 
         <TextView
+            android:layout_alignParentEnd="true"
             android:id="@+id/tv_updateAt"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/tv_user"
-            android:layout_marginStart="5dp"
-            android:layout_marginTop="5dp"
-            android:layout_toEndOf="@+id/iv_person"
             android:lines="1"
             android:maxLength="100"
             android:textColor="?textColor"
@@ -46,7 +42,6 @@
 
 
     </RelativeLayout>
-
     <TextView
         android:id="@+id/tv_content"
         android:layout_marginStart="30dp"

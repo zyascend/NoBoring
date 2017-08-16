@@ -15,8 +15,8 @@ import com.zyascend.NoBoring.utils.SPUtils;
 public class BaseApplication extends Application {
 
 
-    private static final String APP_KEY = "Us7e6OAnLt4kX4gI8ISIT1s7";
-    private static final String APP_ID = "ULngrAI7FbkoY45HlyAbSQqB-gzGzoHsz";
+    private static final String APP_KEY = "VVIjOnCkOuS4s2ETvmCavUus";
+    private static final String APP_ID = "ioJGwMTChBTt0qRdhWFhhEye-gzGzoHsz";
 
 
     private boolean isNight;

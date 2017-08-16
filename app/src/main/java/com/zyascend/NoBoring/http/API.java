@@ -1,5 +1,7 @@
 package com.zyascend.NoBoring.http;
 
+import com.zyascend.NoBoring.bean.CommentResponse;
+import com.zyascend.NoBoring.bean.CreateResponse;
 import com.zyascend.NoBoring.bean.FollowResponse;
 import com.zyascend.NoBoring.bean.ListResponse;
 import com.zyascend.NoBoring.bean.LoginResponse;
@@ -22,6 +24,7 @@ import com.zyascend.NoBoring.dao.ZhiHuResult;
 import java.util.Map;
 
 import okhttp3.RequestBody;
+import okhttp3.ResponseBody;
 import retrofit2.http.Body;
 import retrofit2.http.DELETE;
 import retrofit2.http.GET;
@@ -151,8 +154,23 @@ public class API {
          */
         //@Headers("Content-Type: application/json")
         @Headers("Cache-Control: public, max-age=60")
-        @GET("classes/Comments")
-        Observable<ListResponse> getComments(@Query("where") String idJsonString);
+        @GET("classes/Comment")
+        Observable<ListResponse<CommentResponse>> getComments(@QueryMap Map<String,String> idJsonMap);
+        /**
+         * 提交comment
+         * {
+         "postId": "59754cbf128fe155ce7334d2",
+         "poster": {
+         "__type": "Pointer",
+         "className": "_User",
+         "objectId": "59754d1bfe88c2c1d45b156d"
+         },
+         "content": "这是一条评论003"
+         }
+         */
+        @Headers("Content-Type: application/json")
+        @POST("classes/Comment")
+        Observable<CreateResponse> postComment(@Body RequestBody body);
 
 
         /**

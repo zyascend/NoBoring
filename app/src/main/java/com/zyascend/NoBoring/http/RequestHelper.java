@@ -1,10 +1,12 @@
 package com.zyascend.NoBoring.http;
 
+import com.zyascend.NoBoring.bean.CommentRequset;
 import com.zyascend.NoBoring.bean.LoginRequest;
 import com.zyascend.NoBoring.bean.RegisterRequsetBody;
 
 import okhttp3.MediaType;
 import okhttp3.RequestBody;
+import okhttp3.ResponseBody;
 
 /**
  * 功能：
@@ -31,6 +33,19 @@ public class RequestHelper {
                 "\":{\"__op\":\""
                 + op +
                 "\",\"amount\":1}}";
+        return RequestBody.create(JSON,json);
+    }
+
+    /**
+     * 正确的body构建方式
+     * @param content
+     * @param postId
+     * @param posterId
+     * @return
+     */
+
+    public static RequestBody getPostBody(String content, String postId, String posterId) {
+        String json = new CommentRequset(postId,posterId,content).toString();
         return RequestBody.create(JSON,json);
     }
 }

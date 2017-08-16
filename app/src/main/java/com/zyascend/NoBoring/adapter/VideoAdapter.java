@@ -77,7 +77,7 @@ public class VideoAdapter extends RecyclerArrayAdapter<BudejieVideo> {
 
         @OnClick(R.id.btn_download)
         public void onClick() {
-            DownloadUtils.startDownload(getContext(),data);
+//            DownloadUtils.startDownload(getContext(),data);
         }
 
     }

@@ -10,6 +10,7 @@ import com.zyascend.NoBoring.utils.NetStateUtil;
 
 import java.io.File;
 import java.io.IOException;
+
 import java.util.concurrent.TimeUnit;
 
 import okhttp3.Cache;
@@ -18,6 +19,7 @@ import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
+import okio.Buffer;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
@@ -127,9 +129,25 @@ public class ZhihuService {
             Response response = chain.proceed(request);
             long t2 = System.nanoTime();
             log(String.format("Received response for %s in %.1fms%n%s", response.request().url(), (t2 - t1) / 1e6d, response.headers()));
+            log("body = "+bodyToString(request));
             return response;
         }
     };
+
+    private static String bodyToString(final Request request){
+        try {
+            final Request copy = request.newBuilder().build();
+            final Buffer buffer = new Buffer();
+
+            if (copy.body() != null){
+                copy.body().writeTo(buffer);
+            }
+
+            return buffer.readUtf8();
+        } catch (final IOException e) {
+            return "did not work";
+        }
+    }
 
     private static void log(String msg){
         LogUtils.d("[ Request ] ",msg);
