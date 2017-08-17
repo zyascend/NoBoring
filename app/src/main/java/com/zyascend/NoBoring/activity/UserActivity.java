@@ -11,6 +11,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -46,6 +47,8 @@ import java.util.Map;
 
 import butterknife.Bind;
 import rx.Subscriber;
+
+import static com.zyascend.NoBoring.utils.SPUtils.USER_NAME;
 
 /**
  *
@@ -89,6 +92,7 @@ public class UserActivity extends BaseActivity{
     private UserPostAdapter adapter;
     private RecyclerView.LayoutManager gridLayoutManager;
     private RecyclerView.LayoutManager linerLayoutManager;
+    private String userName = "我的资料";
 
     @Override
     protected void initView() {
@@ -102,8 +106,13 @@ public class UserActivity extends BaseActivity{
         adapter = new UserPostAdapter(this);
         recyclerView.setAdapter(adapter);
 
+        //获取登录信息
         sessionToken = SPUtils.getString(SPUtils.SESSION_TOKEN,null);
-        userId = getIntent().getStringExtra(USER_ID);                viewEmpty.setVisibility(View.VISIBLE);
+        userId = getIntent().getStringExtra(USER_ID);
+        userName = getIntent().getStringExtra(USER_NAME);
+        setTitle(userName);
+
+        viewEmpty.setVisibility(View.VISIBLE);
         viewEmpty.setVisibility(View.VISIBLE);
         if (TextUtils.isEmpty(userId)){
             //打开个人页
@@ -126,21 +135,9 @@ public class UserActivity extends BaseActivity{
             tvOperate.setText("关注");
             loadUserData();
         }
-
-        setAppBar();
     }
 
-    private void setAppBar() {
-        appbar.addOnOffsetChangedListener(new AppBarLayout.OnOffsetChangedListener() {
-            @Override
-            public void onOffsetChanged(AppBarLayout appBarLayout, int verticalOffset) {
-                LogUtils.d( "onOffsetChanged: "+verticalOffset);
-                //0为透明，255表示不透明
-                int alpha = 255-verticalOffset >= 0 ? 255-verticalOffset : 0;
-                userParent.setAlpha(alpha);
-            }
-        });
-    }
+
 
     private void loadLoginedData() {
         LeanCloudService.getInstance().getAPI()
@@ -149,15 +146,14 @@ public class UserActivity extends BaseActivity{
                 .subscribe(new Subscriber<UserResponse>() {
                     @Override
                     public void onCompleted() {
-                        if (progressDialog != null)
-                            progressDialog.dismiss();
+                        showLoadComplete(null);
                     }
 
                     @Override
                     public void onError(Throwable e) {
-                        if (progressDialog != null)
-                            progressDialog.dismiss();
-                        Toast.makeText(UserActivity.this, "加载出错...", Toast.LENGTH_SHORT).show();
+                        showLoadComplete(e.getMessage());
+                        LogUtils.e(e.getMessage());
+
                     }
 
                     @Override
@@ -167,12 +163,21 @@ public class UserActivity extends BaseActivity{
                 });
     }
 
+    private void showLoadComplete(String message) {
+        if (progressDialog !=null)
+            progressDialog.dismiss();
+        if (message != null){
+            Toast.makeText(UserActivity.this, "加载出错", Toast.LENGTH_SHORT).show();
+            LogUtils.e(message);
+        }
+    }
+
     private void bindUserData(UserResponse data) {
         if (data == null)return;
 
-        tvPostCount.setText(data.getPostCount());
-        tvFolloweeCount.setText(data.getFolloweeCount());
-        tvFollowerCount.setText(data.getFollowerCount());
+        tvPostCount.setText(String.valueOf(data.getPostCount()));
+        tvFolloweeCount.setText(String.valueOf(data.getFolloweeCount()));
+        tvFollowerCount.setText(String.valueOf(data.getFollowerCount()));
 
         Glide.with(this)
                 .load(data.getAvatarUrl())
@@ -188,8 +193,6 @@ public class UserActivity extends BaseActivity{
     private void loadPostData(String userId) {
 
         Map<String,String> requsetMap = new HashMap<>();
-        // TODO: 2017/7/23 urlencode ?
-        //https://api.leancloud.cn/1.1/classes/Post?include=poster,picture
         requsetMap.put("order","createdAt");//or -createdAt
         requsetMap.put("include","picture");
         requsetMap.put("where","{\"posterId\":\""+userId+"\"}");
@@ -199,15 +202,12 @@ public class UserActivity extends BaseActivity{
                 .subscribe(new Subscriber<ListResponse<PostResponse>>() {
                     @Override
                     public void onCompleted() {
-                        if (progressDialog != null)
-                            progressDialog.dismiss();
+                        showLoadComplete(null);
                     }
 
                     @Override
                     public void onError(Throwable e) {
-                        if (progressDialog != null)
-                            progressDialog.dismiss();
-                        Toast.makeText(UserActivity.this, "加载出错...", Toast.LENGTH_SHORT).show();
+                        showLoadComplete(e.getMessage());
                     }
 
                     @Override
@@ -242,17 +242,15 @@ public class UserActivity extends BaseActivity{
                 .subscribe(new Subscriber<UserResponse>() {
                     @Override
                     public void onCompleted() {
-                        if (progressDialog != null)
-                            progressDialog.dismiss();
+                        showLoadComplete(null);
                     }
 
                     @Override
                     public void onError(Throwable e) {
-                        if (progressDialog != null)
-                            progressDialog.dismiss();
-                        Toast.makeText(UserActivity.this, "加载出错...", Toast.LENGTH_SHORT).show();
-                    }
+                        showLoadComplete(e.getMessage());
+                        LogUtils.e(e.getMessage());
 
+                    }
                     @Override
                     public void onNext(UserResponse userResponse) {
                         bindUserData(userResponse);

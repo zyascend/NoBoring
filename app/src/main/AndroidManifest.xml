@@ -25,7 +25,7 @@
             android:name=".activity.MainActivity"
             android:label="@string/app_name">
         </activity>
-        <activity android:name=".activity.CommentActivity">
+        <activity android:name=".activity.LoginActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -35,9 +35,10 @@
         <activity android:name=".activity.PhotoActivity"/>
         <activity android:name=".activity.AboutActivity"/>
         <activity android:name=".activity.BaseDetailActivity"/>
-        <activity android:name=".activity.LoginActivity"/>
+        <activity android:name=".activity.CommentActivity"/>
         <activity android:name=".activity.PublishActivity"/>
         <activity android:name=".activity.DownLoadActivity"/>
+        <activity android:name=".activity.UserActivity"/>
         <!--<activity android:name=".activity.UserActivity"/>-->
 
 

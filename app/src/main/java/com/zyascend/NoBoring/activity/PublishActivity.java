@@ -6,12 +6,10 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Build;
-import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.widget.AppCompatSpinner;
 import android.support.v7.widget.GridLayoutManager;
-import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -23,7 +21,10 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
-import com.avos.avoscloud.LogUtil;
+import com.avos.avoscloud.AVException;
+import com.avos.avoscloud.AVFile;
+import com.avos.avoscloud.ProgressCallback;
+import com.avos.avoscloud.SaveCallback;
 import com.fenchtose.nocropper.CropperCallback;
 import com.fenchtose.nocropper.CropperView;
 import com.zyascend.NoBoring.R;
@@ -44,7 +45,7 @@ import com.zyascend.NoBoring.utils.view.SpacesItemDecoration;
 import com.zyascend.NoBoring.utils.view.ViewUtils;
 
 import java.io.File;
-import java.io.IOException;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Map;
 
@@ -83,7 +84,7 @@ public class PublishActivity extends BaseActivity {
     private PhotoFolder currentFolder;
     private boolean isSnappedToCenter;
     private Bitmap mBitmap;
-    private String compressedPath;
+    private String picPath;
 
     @Override
     protected void initView() {
@@ -124,15 +125,13 @@ public class PublishActivity extends BaseActivity {
     }
 
     private void loadPhoto(int position) {
-
         String filePath = currentFolder.getPhotoList().get(position).getPath();
-
+        this.picPath = filePath;
         mBitmap = BitmapFactory.decodeFile(filePath);
         if (mBitmap == null){
             Toast.makeText(this, "加载图片出错", Toast.LENGTH_SHORT).show();
             return;
         }
-
         LogUtils.d("loadBitmap: " + mBitmap.getWidth() + " " + mBitmap.getHeight());
 
         int maxP = Math.max(mBitmap.getWidth(), mBitmap.getHeight());
@@ -264,7 +263,59 @@ public class PublishActivity extends BaseActivity {
 
 
     private void publish() {
+        Luban.with(PublishActivity.this)
+                .load(new File(picPath))//传人要压缩的图片
+                .setCompressListener(new OnCompressListener() {
+                    //设置回调
+                    @Override
+                    public void onStart() {
+                        progressDialog.setProgress(0);
+                        progressDialog.show();
+                    }
+                    @Override
+                    public void onSuccess(File file) {
+                        //上传图片
+                        onBitmapCompressed(file);
+                    }
+                    @Override
+                    public void onError(Throwable e) {
+                        LogUtils.e(e.getMessage());
+                    }
+                })
+                .launch();
 
+    }
+
+    private void onBitmapCompressed(File file) {
+        if (file == null || !file.exists()){
+            Toast.makeText(this, "上传出错", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+
+
+
+
+
+//        try {
+//            //注意以下情况：
+//            //文件未上传完毕，就退出了Activity，导致空指针异常
+//            //解决方案：开启一个服务来上传，上传完毕通知刷新
+//            AVFile avfile = AVFile.withAbsoluteLocalPath(file.getName(), file.getAbsolutePath());
+//            avfile.saveInBackground(new SaveCallback() {
+//                @Override
+//                public void done(AVException e) {
+//
+//                }
+//            }, new ProgressCallback() {
+//                @Override
+//                public void done(Integer integer) {
+//                    if (progressBar != null))
+//                }
+//            });
+//        } catch (FileNotFoundException e) {
+//            e.printStackTrace();
+//        }
     }
 
 
@@ -279,6 +330,7 @@ public class PublishActivity extends BaseActivity {
         switch (item.getItemId()) {
             case R.id.action_continue:
                 // TODO: 2017/7/22
+                publish();
                 break;
         }
         return super.onOptionsItemSelected(item);
@@ -311,44 +363,13 @@ public class PublishActivity extends BaseActivity {
             @Override
             public void onCropped(Bitmap bitmap) {
                 if (bitmap != null) {
-                    compress(bitmap);
+//                    compress(bitmap);
                 }
             }
             @Override
             public void onOutOfMemoryError() {
-
+                LogUtils.e("OutOfMemoryError");
             }
         });
-    }
-
-    private void compress(Bitmap bitmap) {
-        String path = Environment.getExternalStorageDirectory() + "/crop_test.jpg";
-        File file = new File(path);
-        try {
-            BitmapUtils.writeBitmapToFile(bitmap, file, 90);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        Luban.with(PublishActivity.this)
-                .load(file)                     //传人要压缩的图片
-                .setCompressListener(new OnCompressListener() { //设置回调
-                    @Override
-                    public void onStart() {
-
-                    }
-                    @Override
-                    public void onSuccess(File file) {
-                        compressedPath = file.getAbsolutePath();
-                        LogUtils.d(compressedPath);
-                        //上传图片
-
-                    }
-                    @Override
-                    public void onError(Throwable e) {
-                        LogUtils.e(e.getMessage());
-                    }
-                })
-                .launch();
-
     }
 }

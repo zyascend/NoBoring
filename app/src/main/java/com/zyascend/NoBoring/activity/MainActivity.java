@@ -21,7 +21,10 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.avos.avoscloud.AVException;
+import com.avos.avoscloud.AVObject;
 import com.avos.avoscloud.AVUser;
+import com.avos.avoscloud.GetCallback;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.roughike.bottombar.BottomBar;
@@ -37,6 +40,7 @@ import com.zyascend.NoBoring.fragment.ShiPinFragment;
 
 import com.zyascend.NoBoring.utils.ActivityUtils;
 import com.zyascend.NoBoring.utils.CacheCleanUtils;
+import com.zyascend.NoBoring.utils.LogUtils;
 import com.zyascend.NoBoring.utils.glide.CircleTransform;
 import com.zyascend.NoBoring.utils.rxbus.DateEvent;
 import com.zyascend.NoBoring.utils.rxbus.NextEvent;
@@ -48,9 +52,12 @@ import com.zyascend.NoBoring.utils.SPUtils;
 import butterknife.Bind;
 import rx.Subscription;
 
+import static com.zyascend.NoBoring.utils.SPUtils.USER_NAME;
+
 
 public class MainActivity extends BaseActivity
         implements NavigationView.OnNavigationItemSelectedListener, OnTabSelectListener, OnTabReselectListener, View.OnClickListener {
+
     private static final String TAG = "TAG_MainActivity";
     private static final String FRAG_TAG_QUWEN = "tag_quwen";
     private static final String FRAG_TAG_DUANZI = "tag_duanzi";
@@ -77,6 +84,7 @@ public class MainActivity extends BaseActivity
     private TextView mCacheText;
     private TextView userName;
     private ImageView userHeadPic;
+    private boolean logined;
 
 
     @Override
@@ -140,28 +148,43 @@ public class MainActivity extends BaseActivity
     }
 
     private void setupUserInfo() {
-        //获取左侧headView
+
+        //获取左侧headView,设置User信息
         View headerView = navView.getHeaderView(0);
         userName = (TextView) headerView.findViewById(R.id.tv_userName);
         userHeadPic = (ImageView) headerView.findViewById(R.id.ivProfilePic);
-
         userHeadPic.setOnClickListener(this);
         userName.setOnClickListener(this);
 
-        String name = SPUtils.getString(SPUtils.USER_NAME,null);
-        if (name != null){
-            userName.setText(name);
+        AVUser currentUser = AVUser.getCurrentUser();
+        if (currentUser == null){
+            logined = false;
+            return;
         }
+        logined = true;//已登录
+        currentUser.fetchIfNeededInBackground(new GetCallback<AVObject>() {
+            @Override
+            public void done(AVObject avObject, AVException e) {
+                if (avObject != null){
+                    userName.setText(avObject.getString("username"));
+                    Glide.with(MainActivity.this)
+                            .load(avObject.getString("avatarUrl"))
+                            .error(R.mipmap.launcher)
+                            .transform(new CircleTransform(MainActivity.this))
+                            .diskCacheStrategy(DiskCacheStrategy.SOURCE)
+                            .into(userHeadPic);
+                    saveInfo(avObject);
+                }else if (e != null){
+                    LogUtils.e(e.getMessage());
+                }
+            }
+        });
+    }
 
-        String avatarUrl = SPUtils.getString(SPUtils.AVATAR_URL,null);
-        if (avatarUrl != null){
-            Glide.with(this)
-                    .load(avatarUrl)
-                    .transform(new CircleTransform(this))
-                    .diskCacheStrategy(DiskCacheStrategy.SOURCE)
-                    .into(userHeadPic);
-        }
-
+    private void saveInfo(AVObject avObject) {
+        String session = avObject.getString("sessionToken");
+        LogUtils.d("session = "+session);
+        SPUtils.putString(session,SPUtils.SESSION_TOKEN);
     }
 
     private void restartActivity() {
@@ -242,6 +265,7 @@ public class MainActivity extends BaseActivity
             case R.id.menu_exit:
                 //退出登录
                 SPUtils.putString(null,SPUtils.SESSION_TOKEN);
+                AVUser.logOut();
                 Intent intent1 = new Intent(MainActivity.this, LoginActivity.class);
                 intent1.putExtra(LoginActivity.FROM_EXIT_LOGIN,true);
                 startActivity(intent1);
@@ -403,14 +427,17 @@ public class MainActivity extends BaseActivity
         switch (v.getId()){
             case R.id.ivProfilePic:
             case R.id.tv_userName:
-                if (SPUtils.getString(SPUtils.SESSION_TOKEN,null) == null){
+                if (!logined){
                     //跳转到登录界面
                     Intent intent = new Intent(MainActivity.this,LoginActivity.class);
                     startActivity(intent);
                     MainActivity.this.finish();
                 }else {
                     //跳转到用户界面
-                    ActivityUtils.jumpTo(this,UserActivity.class);
+                    Intent intent2 = new Intent(MainActivity.this,UserActivity.class);
+                    intent2.putExtra(USER_NAME,userName.getText());
+                    startActivity(intent2);
+                    MainActivity.this.finish();
                 }
                 break;
         }

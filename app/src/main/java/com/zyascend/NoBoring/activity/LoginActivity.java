@@ -18,6 +18,7 @@ import com.avos.avoscloud.AVAnalytics;
 import com.avos.avoscloud.AVException;
 import com.avos.avoscloud.AVUser;
 import com.avos.avoscloud.LogInCallback;
+import com.avos.avoscloud.SignUpCallback;
 import com.zyascend.NoBoring.R;
 import com.zyascend.NoBoring.base.BaseActivity;
 import com.zyascend.NoBoring.bean.LoginResponse;
@@ -83,25 +84,23 @@ public class LoginActivity extends BaseActivity implements TextView.OnEditorActi
         progressDialog = new ProgressDialog(this);
         progressDialog.setMessage(getString(R.string.loginng));
         boolean fromMain = getIntent().getBooleanExtra(FROM_EXIT_LOGIN,false);
-        if (!TextUtils.isEmpty(SPUtils.getString(SPUtils.SESSION_TOKEN,null))
-                && !fromMain){
+        if (AVUser.getCurrentUser() != null && !fromMain){
             startActivity(new Intent(LoginActivity.this, MainActivity.class));
             LoginActivity.this.finish();
         }
         ed_password.setOnEditorActionListener(this);
     }
 
-    @Override
-    protected void onNewIntent(Intent intent) {
-        super.onNewIntent(intent);
-        setIntent(intent);
-    }
 
     @OnClick({R.id.username_login_button, R.id.username_register_button, R.id.tv_jumpLogin})
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.username_login_button:
-                startLogin();
+                if (layoutEmail.getVisibility()!=View.GONE){
+                    layoutEmail.setVisibility(View.GONE);
+                }else{
+                    startLogin();
+                }
                 break;
             case R.id.username_register_button:
                 if (layoutEmail.getVisibility()!=View.VISIBLE){
@@ -141,12 +140,11 @@ public class LoginActivity extends BaseActivity implements TextView.OnEditorActi
             cancel = true;
         }
 
-        if (!TextUtils.isEmpty(pass_word) && pass_word.length()<6) {
+        if (TextUtils.isEmpty(pass_word)) {
             ed_password.setError(this.getString(R.string.error_invalid_password));
             focusView = ed_password;
             cancel = true;
         }
-
         if (cancel){
             focusView.requestFocus();
         }else {
@@ -161,47 +159,41 @@ public class LoginActivity extends BaseActivity implements TextView.OnEditorActi
     }
 
 
-    private void doRegister(final String username, String password, String email) {
+    private void doRegister(final String username, final String password, String email) {
+        AVUser user = new AVUser();// 新建 AVUser 对象实例
+        user.setUsername(username);// 设置用户名
+        user.setPassword(password);// 设置密码
+        user.setEmail(email);// 设置邮箱
+        user.signUpInBackground(new SignUpCallback() {
+            @Override
+            public void done(AVException e) {
+                if (e == null) {
+                    // 注册成功
+                    doLogin(username,password);
+                } else {
+                    showError(e.getCode());
+                }
+            }
+        });
+    }
+
+    private void doLogin(String username, String password) {
         showProgress(true);
-        LeanCloudService.getInstance().getAPI()
-                .register(RequestHelper.getRegisterBody(username,password,email))
-                .compose(RxTransformer.INSTANCE.<RegisterResponse>transform(lifeCycleSubject))
-                .map(new Func1<RegisterResponse, String>() {
-                    @Override
-                    public String call(RegisterResponse registerResponse) {
-                        if (registerResponse == null){
-                            return "注册失败";
-                        }
-                        SPUtils.putUserInfo(registerResponse,username);
-                        return "注册成功";
-                    }
-                }).subscribe(new Subscriber<String>() {
+        AVUser.logInInBackground(username, password, new LogInCallback<AVUser>() {
             @Override
-            public void onCompleted() {
-
-            }
-
-            @Override
-            public void onError(Throwable e) {
-                LogUtils.e(e.getMessage());
-            }
-
-            @Override
-            public void onNext(String s) {
-                if ("注册成功".equals(s)) {
-                    // 注册成功，把用户对象赋值给当前用户 AVUser.getCurrentUser()
+            public void done(AVUser avUser, AVException e) {
+                if (e == null){
                     startActivity(new Intent(LoginActivity.this, MainActivity.class));
                     LoginActivity.this.finish();
-                } else {
-                    // 失败的原因可能有多种，常见的是用户名已经存在。
-                    showProgress(false);
-                    Toast.makeText(LoginActivity.this, s, Toast.LENGTH_SHORT).show();
+                }else {
+                    showError(e.getCode());
                 }
             }
         });
     }
 
     private void showError(int code) {
+        progressDialog.dismiss();
         String msg = null;
         switch (code) {
             case 211:
@@ -249,7 +241,7 @@ public class LoginActivity extends BaseActivity implements TextView.OnEditorActi
             cancel = true;
         }
 
-        if (!TextUtils.isEmpty(password) && !isPasswordValid(password)) {
+        if (TextUtils.isEmpty(password)) {
             ed_password.setError(getString(R.string.error_invalid_password));
             focusView = ed_password;
             cancel = true;
@@ -258,55 +250,7 @@ public class LoginActivity extends BaseActivity implements TextView.OnEditorActi
         if (cancel) {
             focusView.requestFocus();
         } else {
-            showProgress(true);
-            AVUser.logInInBackground(username, password, new LogInCallback<AVUser>() {
-                @Override
-                public void done(AVUser avUser, AVException e) {
-                    if (e == null){
-                        startActivity(new Intent(LoginActivity.this, MainActivity.class));
-                        LoginActivity.this.finish();
-                    }else {
-                        Toast.makeText(LoginActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
-                    }
-                }
-            });
-//            LeanCloudService.getInstance().getAPI()
-//                    .login(RequestHelper.getLoginBody(username,password))
-//                    .compose(RxTransformer.INSTANCE.<LoginResponse>transform(lifeCycleSubject))
-//                    .map(new Func1<LoginResponse, String>() {
-//                        @Override
-//                        public String call(LoginResponse loginResponse) {
-//                            if (loginResponse == null){
-//                                return "登录失败";
-//                            }
-//                            SPUtils.putUserInfo(loginResponse);
-//                            return "登录成功";
-//                        }
-//                    }).subscribe(new Subscriber<String>() {
-//                @Override
-//                public void onCompleted() {
-//
-//                }
-//
-//                @Override
-//                public void onError(Throwable e) {
-//                    LogUtils.e(e.getMessage());
-//                    progressDialog.dismiss();
-//                }
-//
-//                @Override
-//                public void onNext(String s) {
-//                    if ("登录成功".equals(s)) {
-//                        startActivity(new Intent(LoginActivity.this, MainActivity.class));
-//                        LoginActivity.this.finish();
-//                    } else {
-//                        // 失败的原因可能有多种，常见的是用户名已经存在。
-//                        showProgress(false);
-//                        Toast.makeText(LoginActivity.this, s, Toast.LENGTH_SHORT).show();
-//                    }
-//                }
-//            });
-
+            doLogin(username,password);
         }
     }
 
