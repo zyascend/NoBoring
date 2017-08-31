@@ -2,6 +2,7 @@ package com.zyascend.NoBoring.activity;
 
 import android.Manifest;
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -25,15 +26,19 @@ import com.avos.avoscloud.AVException;
 import com.avos.avoscloud.AVFile;
 import com.avos.avoscloud.ProgressCallback;
 import com.avos.avoscloud.SaveCallback;
+import com.bumptech.glide.util.LruCache;
 import com.fenchtose.nocropper.CropperCallback;
 import com.fenchtose.nocropper.CropperView;
 import com.zyascend.NoBoring.R;
 import com.zyascend.NoBoring.adapter.PhotoAdapter;
 import com.zyascend.NoBoring.base.BaseActivity;
 import com.zyascend.NoBoring.base.BaseAdapter;
+import com.zyascend.NoBoring.bean.DownLoadBean;
+import com.zyascend.NoBoring.bean.UploadBean;
 import com.zyascend.NoBoring.dao.PhotoFolder;
 import com.zyascend.NoBoring.utils.ActivityUtils;
 import com.zyascend.NoBoring.utils.LogUtils;
+import com.zyascend.NoBoring.utils.LruCacheUtils;
 import com.zyascend.NoBoring.utils.picture.PhotoUtils;
 import com.zyascend.NoBoring.utils.picture.luban.Luban;
 import com.zyascend.NoBoring.utils.picture.luban.OnCompressListener;
@@ -291,31 +296,11 @@ public class PublishActivity extends BaseActivity {
             Toast.makeText(this, "上传出错", Toast.LENGTH_SHORT).show();
             return;
         }
-
-
-
-
-
-
-//        try {
-//            //注意以下情况：
-//            //文件未上传完毕，就退出了Activity，导致空指针异常
-//            //解决方案：开启一个服务来上传，上传完毕通知刷新
-//            AVFile avfile = AVFile.withAbsoluteLocalPath(file.getName(), file.getAbsolutePath());
-//            avfile.saveInBackground(new SaveCallback() {
-//                @Override
-//                public void done(AVException e) {
-//
-//                }
-//            }, new ProgressCallback() {
-//                @Override
-//                public void done(Integer integer) {
-//                    if (progressBar != null))
-//                }
-//            });
-//        } catch (FileNotFoundException e) {
-//            e.printStackTrace();
-//        }
+        Intent intent = new Intent(this, TaskService.class);
+        UploadBean bean = new UploadBean(file.getAbsolutePath(),file.getName(),"");
+        intent.putExtra(TaskService.BEAN,bean);
+        intent.putExtra(TaskService.TASK_TYPE, TaskService.TYPE_UPLOAD);
+        startService(intent);
     }
 
 

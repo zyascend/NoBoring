@@ -4,6 +4,7 @@ import android.app.Application;
 import android.content.Context;
 
 import com.avos.avoscloud.AVOSCloud;
+import com.lzy.okgo.OkGo;
 import com.squareup.leakcanary.LeakCanary;
 import com.squareup.leakcanary.RefWatcher;
 import com.zyascend.NoBoring.utils.SPUtils;
@@ -34,6 +35,8 @@ public class BaseApplication extends Application {
         // 放在 SDK 初始化语句 AVOSCloud.initialize() 后面，只需要调用一次即可
         //在应用发布之前，请关闭调试日志，以免暴露敏感数据。
         AVOSCloud.setDebugLogEnabled(true);
+
+        OkGo.getInstance().init(this);
 
 
     }

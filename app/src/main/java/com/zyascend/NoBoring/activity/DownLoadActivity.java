@@ -1,6 +1,6 @@
 package com.zyascend.NoBoring.activity;
 
-import android.os.Bundle;
+
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
@@ -12,9 +12,9 @@ import com.zyascend.NoBoring.R;
 import com.zyascend.NoBoring.adapter.DownloadAdapter;
 import com.zyascend.NoBoring.base.BaseActivity;
 import com.zyascend.NoBoring.utils.view.DividerItemDecoration;
+import com.zyascend.NoBoring.utils.view.SpacesItemDecoration;
 
 import butterknife.Bind;
-import butterknife.ButterKnife;
 
 /**
  * 功能：下载管理activity
@@ -44,7 +44,7 @@ public class DownLoadActivity extends BaseActivity
         adapter.addDataListener(this);
         adapter.updateData(DownloadAdapter.TYPE_ALL);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        recyclerView.addItemDecoration(new DividerItemDecoration(this,LinearLayoutManager.VERTICAL));
+        recyclerView.addItemDecoration(new SpacesItemDecoration(2));
         recyclerView.setAdapter(adapter);
 
         okDownload.addOnAllTaskEndListener(this);

@@ -1,6 +1,9 @@
 package com.zyascend.NoBoring.adapter;
 
 import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
+import android.os.Environment;
 import android.support.v7.widget.RecyclerView;
 import android.text.format.Formatter;
 import android.view.LayoutInflater;
@@ -115,17 +118,6 @@ public class DownloadAdapter extends RecyclerView.Adapter<DownloadAdapter.ViewHo
         return values == null ? 0 : values.size();
     }
 
-    @OnClick({R.id.btn_state, R.id.iv_delete})
-    public void onClick(View view) {
-        switch (view.getId()) {
-            case R.id.btn_state:
-                break;
-            case R.id.iv_delete:
-                break;
-        }
-    }
-
-
 
     public class ViewHolder extends RecyclerView.ViewHolder {
 
@@ -212,14 +204,21 @@ public class DownloadAdapter extends RecyclerView.Adapter<DownloadAdapter.ViewHo
                     task.pause();
                     break;
                 case Progress.FINISH:
-                    openMp4(new File(progress.filePath));
+                    openMp4(progress.filePath);
                     break;
             }
             refresh(progress);
         }
 
-        private void openMp4(File file) {
-
+        private void openMp4(String file) {
+            Uri uri = Uri.parse("file://"+file);
+            Intent intent = new Intent(Intent.ACTION_VIEW);
+            intent.setDataAndType(uri, "video/mp4");
+            try{
+                context.startActivity(intent);
+            }catch (Exception e){
+                Toast.makeText(context, "系统播放器不可用", Toast.LENGTH_SHORT).show();
+            }
         }
 
         @OnClick(R.id.iv_delete)
@@ -227,11 +226,6 @@ public class DownloadAdapter extends RecyclerView.Adapter<DownloadAdapter.ViewHo
             task.remove(true);
             updateData(type);
         }
-
-//        @OnClick(R.id.restart)
-//        public void restart() {
-//            task.restart();
-//        }
 
         public void setTag(String tag) {
             this.tag = tag;

@@ -74,12 +74,6 @@ public class ShiPingListFragment extends BaseRecyclerFragment<VideoAdapter> impl
     @Override
     public void doOnInitViews() {
         api = RetrofitService.init().createAPI(Constants.BASE_URL_BUDEJIE, API.BudejieApi.class);
-        getRecyclerView().setOnScrollListener(new RecyclerView.OnScrollListener() {
-            @Override
-            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-                JCVideoPlayer.onScroll();
-            }
-        });
     }
 
     @Override

@@ -26,6 +26,7 @@ import com.zyascend.NoBoring.utils.SPUtils;
 import com.zyascend.NoBoring.utils.rx.RxTransformer;
 import com.zyascend.NoBoring.utils.view.DividerItemDecoration;
 
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -122,6 +123,7 @@ public class CommentActivity extends BaseActivity {
     private void showError() {
 
     }
+    
 
     private void showLoadingComplete() {
 

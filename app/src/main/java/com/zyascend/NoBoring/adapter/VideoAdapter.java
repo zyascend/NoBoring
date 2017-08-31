@@ -1,6 +1,7 @@
 package com.zyascend.NoBoring.adapter;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,8 +13,10 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.jude.easyrecyclerview.adapter.BaseViewHolder;
 import com.jude.easyrecyclerview.adapter.RecyclerArrayAdapter;
 import com.zyascend.NoBoring.R;
+import com.zyascend.NoBoring.activity.TaskService;
+import com.zyascend.NoBoring.bean.DownLoadBean;
 import com.zyascend.NoBoring.dao.BudejieVideo;
-import com.zyascend.NoBoring.utils.DownloadUtils;
+import com.zyascend.NoBoring.utils.LogUtils;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -65,6 +68,7 @@ public class VideoAdapter extends RecyclerArrayAdapter<BudejieVideo> {
             if (data == null) {
                 return;
             }
+
             this.data = data;
             player.setUp(url, JCVideoPlayer.SCREEN_LAYOUT_LIST, "");
             tvTitle.setText(data.getTitle());
@@ -77,7 +81,13 @@ public class VideoAdapter extends RecyclerArrayAdapter<BudejieVideo> {
 
         @OnClick(R.id.btn_download)
         public void onClick() {
-//            DownloadUtils.startDownload(getContext(),data);
+            Intent intent = new Intent(getContext(), TaskService.class);
+            DownLoadBean bean = new DownLoadBean(data.getTitle(),data.getVideoUrl()
+                    ,data.getThumbUrl(),getAdapterPosition());
+            intent.putExtra(TaskService.BEAN,bean);
+            intent.putExtra(TaskService.TASK_TYPE, TaskService.TYPE_DOWNLOAD);
+            getContext().startService(intent);
+            LogUtils.d("clicked");
         }
 
     }

@@ -13,12 +13,14 @@
         android:layout_height="80dp" />
 
     <TextView
+        android:layout_marginEnd="15dp"
+        android:layout_toStartOf="@+id/iv_delete"
         android:id="@+id/tv_title"
         android:textColor="?textColor"
         android:lines="1"
-        android:maxLength="10"
+        android:maxLength="15"
         tools:text="djsalasdbnjasdkjddsahdsjhdjsdhsjdhhdsj"
-        android:textSize="18sp"
+        android:textSize="15sp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignBottom="@+id/iv_delete"
@@ -29,9 +31,8 @@
         android:id="@+id/tv_size"
         android:textColor="?textColor"
         android:lines="1"
-        android:maxLength="10"
         tools:text="5/10"
-        android:textSize="15sp"
+        android:textSize="13sp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignStart="@+id/progressBar" />
