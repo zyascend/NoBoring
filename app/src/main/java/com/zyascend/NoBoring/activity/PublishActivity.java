@@ -11,6 +11,7 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.widget.AppCompatSpinner;
 import android.support.v7.widget.GridLayoutManager;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -44,6 +45,11 @@ import com.zyascend.NoBoring.utils.picture.luban.Luban;
 import com.zyascend.NoBoring.utils.picture.luban.OnCompressListener;
 import com.zyascend.NoBoring.utils.rx.RxTransformer;
 import com.zyascend.NoBoring.utils.picture.BitmapUtils;
+import com.zyascend.NoBoring.utils.rxbus.BackEvent;
+import com.zyascend.NoBoring.utils.rxbus.NextEvent;
+import com.zyascend.NoBoring.utils.rxbus.RxBus;
+import com.zyascend.NoBoring.utils.rxbus.RxBusSubscriber;
+import com.zyascend.NoBoring.utils.rxbus.RxSubscriptions;
 import com.zyascend.NoBoring.utils.view.CoordinatorLinearLayout;
 import com.zyascend.NoBoring.utils.view.CoordinatorRecyclerView;
 import com.zyascend.NoBoring.utils.view.SpacesItemDecoration;
@@ -58,6 +64,7 @@ import butterknife.Bind;
 import butterknife.OnClick;
 import rx.Observable;
 import rx.Subscriber;
+import rx.Subscription;
 import rx.functions.Action0;
 
 
@@ -93,6 +100,8 @@ public class PublishActivity extends BaseActivity {
 
     @Override
     protected void initView() {
+        progressDialog = new ProgressDialog(this);
+        progressDialog.setMessage("图片处理中...");
         progressBar.setVisibility(View.VISIBLE);
 
         setLayoutSize();
@@ -100,7 +109,7 @@ public class PublishActivity extends BaseActivity {
 
         //检查动态权限
         requestPermission(Manifest.permission.READ_EXTERNAL_STORAGE, CODE_READ);
-
+//        subscribeEvent();
     }
 
 
@@ -280,11 +289,13 @@ public class PublishActivity extends BaseActivity {
                     @Override
                     public void onSuccess(File file) {
                         //上传图片
+                        progressDialog.dismiss();
                         onBitmapCompressed(file);
                     }
                     @Override
                     public void onError(Throwable e) {
                         LogUtils.e(e.getMessage());
+                        progressDialog.dismiss();
                     }
                 })
                 .launch();
@@ -301,6 +312,7 @@ public class PublishActivity extends BaseActivity {
         intent.putExtra(TaskService.BEAN,bean);
         intent.putExtra(TaskService.TASK_TYPE, TaskService.TYPE_UPLOAD);
         startService(intent);
+        onBackPressed();
     }
 
 
@@ -356,5 +368,31 @@ public class PublishActivity extends BaseActivity {
                 LogUtils.e("OutOfMemoryError");
             }
         });
+    }
+
+//    private Subscription mNextSub;
+//
+//    private void subscribeEvent(){
+//        if (mNextSub != null && !mNextSub.isUnsubscribed()) {
+//            //清除以前的订阅
+//            RxSubscriptions.remove(mNextSub);
+//        } else {
+//            mNextSub = RxBus.getDefault().toObservableSticky(BackEvent.class)
+//                    // 建议在Sticky时,在操作符内主动try,catch
+//                    .subscribe(new RxBusSubscriber<BackEvent>() {
+//                        @Override
+//                        protected void onEvent(BackEvent event) {
+//                            //上传成功，返回
+//                            onBackPressed();
+//                        }
+//                    });
+//        }
+//        RxSubscriptions.add(mNextSub);
+//    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+//        RxSubscriptions.remove(mNextSub);
     }
 }

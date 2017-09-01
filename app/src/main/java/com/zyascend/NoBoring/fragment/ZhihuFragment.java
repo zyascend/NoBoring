@@ -213,8 +213,8 @@ public class ZhihuFragment extends BaseRecyclerFragment<ZhiHuAdapter> {
             //清除以前的订阅
             RxSubscriptions.remove(mNextSub);
         } else {
-            NextEvent event = RxBus.getDefault().getStickyEvent(NextEvent.class);
-            Log.i(TAG, "获取到StickyEvent--->" + event);
+//            NextEvent event = RxBus.getDefault().getStickyEvent(NextEvent.class);
+//            Log.i(TAG, "获取到StickyEvent--->" + event);
             mNextSub = RxBus.getDefault().toObservableSticky(NextEvent.class)
                     // 建议在Sticky时,在操作符内主动try,catch
                     .subscribe(new RxBusSubscriber<NextEvent>() {
@@ -223,7 +223,7 @@ public class ZhihuFragment extends BaseRecyclerFragment<ZhiHuAdapter> {
                             if (nextEvent == null)return;
                             if (nextEvent.next == 0){
                                 loadBefore();
-                            }else {
+                            } else {
                                 loadLastest();
                             }
                         }

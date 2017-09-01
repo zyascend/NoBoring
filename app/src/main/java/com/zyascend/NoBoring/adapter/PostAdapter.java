@@ -65,7 +65,8 @@ public class PostAdapter extends RecyclerArrayAdapter<PostResponse> {
 
 
 
-    public class PostHolder extends BaseViewHolder<PostResponse> implements View.OnClickListener, ViewSwitcher.ViewFactory {
+    public class PostHolder extends BaseViewHolder<PostResponse> implements View.OnClickListener,
+            ViewSwitcher.ViewFactory {
 
         private TextView tvUserName;
         private TextView tvDate;

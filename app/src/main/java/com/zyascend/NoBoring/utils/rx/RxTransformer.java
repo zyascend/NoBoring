@@ -13,7 +13,7 @@ import rx.subjects.PublishSubject;
 
 public enum RxTransformer {
 
-        INSTANCE;
+    INSTANCE;
 
     public <T> Observable.Transformer<T,T> transform(final PublishSubject<LifeCycleEvent> lifecycleSubject){
 

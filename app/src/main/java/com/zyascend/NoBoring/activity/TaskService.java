@@ -14,6 +14,8 @@ import android.text.TextUtils;
 
 import com.avos.avoscloud.AVException;
 import com.avos.avoscloud.AVFile;
+import com.avos.avoscloud.AVObject;
+import com.avos.avoscloud.AVUser;
 import com.avos.avoscloud.ProgressCallback;
 import com.avos.avoscloud.SaveCallback;
 import com.lzy.okgo.OkGo;
@@ -25,6 +27,9 @@ import com.zyascend.NoBoring.R;
 import com.zyascend.NoBoring.bean.DownLoadBean;
 import com.zyascend.NoBoring.bean.UploadBean;
 import com.zyascend.NoBoring.utils.LogUtils;
+import com.zyascend.NoBoring.utils.rxbus.BackEvent;
+import com.zyascend.NoBoring.utils.rxbus.DateEvent;
+import com.zyascend.NoBoring.utils.rxbus.RxBus;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -78,6 +83,8 @@ public class TaskService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         LogUtils.d("service onStartCommand");
+        if (intent == null)return super.onStartCommand(intent, flags, startId);
+
         if (TextUtils.equals(intent.getStringExtra(TASK_TYPE),TYPE_UPLOAD)){
             //开启上传任务
             startUpLoad(intent);
@@ -101,9 +108,9 @@ public class TaskService extends Service {
                 public void done(AVException e) {
                     //关联Post对象
                     if (e != null){
-                        publisj(avfile.getObjectId());
+                        showError(e);
                     }else {
-                        showError();
+                        createPost(avfile.getObjectId(),upload.content);
                     }
                 }
             }, new ProgressCallback() {
@@ -117,8 +124,34 @@ public class TaskService extends Service {
         }
     }
 
-    private void showError() {
+    private void createPost(String fileId, String content) {
+        LogUtils.d("create Post");
+        AVObject post = new AVObject("Post");
+        String posterID = AVUser.getCurrentUser().getObjectId();
+        post.put("content",content);
+        post.put("posterId", posterID);
+        post.put("picture",AVObject.createWithoutData("_File",fileId));
+        post.put("poster",AVObject.createWithoutData("_User",posterID));
+        post.saveInBackground(new SaveCallback() {
+            @Override
+            public void done(AVException e) {
+                if (e == null){
+                    mBuilder.setContentText("上传成功");
+                    mNotifyManager.notify(1000,mBuilder.build());
+                    mNotifyManager.cancel(1000);
+                    RxBus.getDefault().postSticky(new BackEvent());
+                    LogUtils.d("create Post OKKKKKK");
+                }else {
+                    mBuilder.setContentText("上传失败");
+                    mNotifyManager.notify(1000,mBuilder.build());
+                    LogUtils.e("upload error : "+e.getMessage());
+                }
+            }
+        });
+    }
 
+    private void showError(AVException e) {
+        LogUtils.d("error"+e.getMessage());
     }
 
     private void showUpLoadNotification(Integer progress, String fileName) {
@@ -185,11 +218,10 @@ public class TaskService extends Service {
         mNotifyManager.notify(downLoadBean.id,mBuilder.build());
     }
 
-
-
     @Override
     public void onDestroy() {
         super.onDestroy();
         OkDownload.getInstance().pauseAll();
+        RxBus.getDefault().removeAllStickyEvents();
     }
 }

@@ -185,6 +185,7 @@ public class MainActivity extends BaseActivity
         String session = avObject.getString("sessionToken");
         LogUtils.d("session = "+session);
         SPUtils.putString(session,SPUtils.SESSION_TOKEN);
+        SPUtils.putString(avObject.getString("username"),SPUtils.SESSION_TOKEN);
     }
 
     private void restartActivity() {

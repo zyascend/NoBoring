@@ -4,9 +4,11 @@ import android.content.Intent;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import com.jude.easyrecyclerview.EasyRecyclerView;
 import com.jude.easyrecyclerview.adapter.RecyclerArrayAdapter;
@@ -25,6 +27,11 @@ import com.zyascend.NoBoring.utils.ActivityUtils;
 import com.zyascend.NoBoring.utils.Constants;
 import com.zyascend.NoBoring.utils.LogUtils;
 import com.zyascend.NoBoring.utils.rx.RxTransformer;
+import com.zyascend.NoBoring.utils.rxbus.BackEvent;
+import com.zyascend.NoBoring.utils.rxbus.NextEvent;
+import com.zyascend.NoBoring.utils.rxbus.RxBus;
+import com.zyascend.NoBoring.utils.rxbus.RxBusSubscriber;
+import com.zyascend.NoBoring.utils.rxbus.RxSubscriptions;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -35,6 +42,7 @@ import butterknife.Bind;
 import butterknife.OnClick;
 import rx.Observable;
 import rx.Subscriber;
+import rx.Subscription;
 import rx.functions.Action0;
 import rx.functions.Action1;
 
@@ -65,7 +73,7 @@ public class CommunityFragment extends BaseFragment implements SwipeRefreshLayou
     private void loadData() {
 
         Map<String,String> requsetMap = new HashMap<>();
-        requsetMap.put("order","createdAt");//or -createdAt
+        requsetMap.put("order","-createdAt");//or -createdAt
         requsetMap.put("limit","10");
         requsetMap.put("include","poster,picture");
         requsetMap.put("skip",String.valueOf((page-1)*10));
@@ -123,8 +131,6 @@ public class CommunityFragment extends BaseFragment implements SwipeRefreshLayou
     @Override
     protected void initViews() {
         adapter = new PostAdapter(getActivity());
-        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        recyclerView.setAdapter(adapter);
         adapter.setMore(R.layout.load_more, this);
         adapter.setNoMore(R.layout.no_more);
         adapter.setError(R.layout.load_error);
@@ -132,6 +138,19 @@ public class CommunityFragment extends BaseFragment implements SwipeRefreshLayou
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         recyclerView.setAdapter(adapter);
         recyclerView.setRefreshListener(this);
+        recyclerView.setOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+
+                if (newState == RecyclerView.SCROLL_STATE_IDLE)
+                    fab.show();
+                else {
+                    fab.hide();
+                }
+            }
+        });
+        subscribeEvent();
     }
 
     private void doOnItemClick(int position) {
@@ -257,5 +276,34 @@ public class CommunityFragment extends BaseFragment implements SwipeRefreshLayou
 
                     }
                 });
+    }
+
+    private Subscription mNextSub;
+
+    private void subscribeEvent(){
+        if (mNextSub != null && !mNextSub.isUnsubscribed()) {
+            //清除以前的订阅
+            RxSubscriptions.remove(mNextSub);
+        } else {
+//            NextEvent event = RxBus.getDefault().getStickyEvent(NextEvent.class);
+//            Log.i(TAG, "获取到StickyEvent--->" + event);
+            mNextSub = RxBus.getDefault().toObservableSticky(BackEvent.class)
+                    .subscribe(new RxBusSubscriber<BackEvent>() {
+                        @Override
+                        protected void onEvent(BackEvent event) {
+                            if (event == null)return;
+                            LogUtils.d("Receive event");
+                            Toast.makeText(getActivity(), "上传成功", Toast.LENGTH_SHORT).show();
+                            onRefresh();
+                        }
+                    });
+        }
+        RxSubscriptions.add(mNextSub);
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        RxSubscriptions.remove(mNextSub);
     }
 }

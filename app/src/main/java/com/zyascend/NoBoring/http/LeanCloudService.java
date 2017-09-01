@@ -42,6 +42,7 @@ public class LeanCloudService {
         builder.cache(cache)
                 .addInterceptor(LOG_INTERCEPTOR)
                 .addInterceptor(CACHE_INTERCEPTOR)
+                .addNetworkInterceptor(CACHE_INTERCEPTOR)
                 .addInterceptor(new Interceptor() {
                     @Override
                     public Response intercept(Chain chain) throws IOException {
@@ -54,7 +55,6 @@ public class LeanCloudService {
                     }
 
                 })
-                .addNetworkInterceptor(CACHE_INTERCEPTOR)
                 .connectTimeout(DEFAULT_TIMEOUT, TimeUnit.SECONDS);
 
         Retrofit retrofit = new Retrofit.Builder()

@@ -12,7 +12,7 @@
         android:id="@+id/fab"
         android:src="@drawable/ic_photo_circle"
         android:layout_marginEnd="16dp"
-        android:layout_marginBottom="70dp"
+        android:layout_marginBottom="130dp"
         android:layout_alignParentBottom="true"
         android:layout_alignParentEnd="true"
         android:layout_width="wrap_content"
