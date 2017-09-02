@@ -26,6 +26,7 @@
         android:layout_height="match_parent"/>
 
     <RelativeLayout
+        android:id="@+id/re_comment"
         android:layout_gravity="bottom"
         android:focusable="true"
         android:focusableInTouchMode="true"

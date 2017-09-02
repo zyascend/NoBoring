@@ -12,13 +12,16 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:fitsSystemWindows="true"
-        app:theme="@style/ToolbarTheme">
+        app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+        app:popupTheme="@style/ThemeOverlay.AppCompat.Light">
         <!--app:layout_scrollFlags="scroll|enterAlways"-->
         <android.support.design.widget.CollapsingToolbarLayout
             app:titleEnabled="false"
             android:id="@+id/collapsingToolbar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+            app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
             app:contentScrim="?attr/colorPrimary"
             app:layout_scrollFlags="scroll|exitUntilCollapsed">
             <LinearLayout
@@ -154,8 +157,8 @@
                 android:background="?attr/colorPrimary"
                 android:gravity="center_vertical"
                 app:layout_collapseMode="pin"
-                app:popupTheme="@style/AppTheme.PopupOverlay"
-                app:theme="@style/ToolbarTheme"
+                app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+                app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
                 app:titleTextColor="#ffffff" />
         </android.support.design.widget.CollapsingToolbarLayout>
         <LinearLayout

@@ -185,7 +185,7 @@ public class MainActivity extends BaseActivity
         String session = avObject.getString("sessionToken");
         LogUtils.d("session = "+session);
         SPUtils.putString(session,SPUtils.SESSION_TOKEN);
-        SPUtils.putString(avObject.getString("username"),SPUtils.SESSION_TOKEN);
+        SPUtils.putString(avObject.getString("username"),SPUtils.USER_NAME);
     }
 
     private void restartActivity() {
@@ -438,7 +438,6 @@ public class MainActivity extends BaseActivity
                     Intent intent2 = new Intent(MainActivity.this,UserActivity.class);
                     intent2.putExtra(USER_NAME,userName.getText());
                     startActivity(intent2);
-                    MainActivity.this.finish();
                 }
                 break;
         }

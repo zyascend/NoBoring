@@ -21,6 +21,7 @@ import android.widget.ArrayAdapter;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.avos.avoscloud.AVException;
@@ -73,7 +74,7 @@ public class PublishActivity extends BaseActivity {
     private static final int CODE_READ = 1;
     private static final float TOP_REMAIN_HEIGHT = 48;
     @Bind(R.id.fileSpinner)
-    AppCompatSpinner fileSpinner;
+    Spinner fileSpinner;
     @Bind(R.id.progressBar)
     ProgressBar progressBar;
     @Bind(R.id.photo_frame)

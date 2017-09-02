@@ -5,8 +5,10 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.avos.avoscloud.AVException;
@@ -22,6 +24,7 @@ import com.zyascend.NoBoring.bean.PostResponse;
 import com.zyascend.NoBoring.http.LeanCloudService;
 import com.zyascend.NoBoring.http.RequestHelper;
 import com.zyascend.NoBoring.http.RetrofitService;
+import com.zyascend.NoBoring.utils.LogUtils;
 import com.zyascend.NoBoring.utils.SPUtils;
 import com.zyascend.NoBoring.utils.rx.RxTransformer;
 import com.zyascend.NoBoring.utils.view.DividerItemDecoration;
@@ -54,6 +57,8 @@ public class CommentActivity extends BaseActivity {
     Button btnSendComment;
     @Bind(R.id.coordinatorView)
     CoordinatorLayout coordinatorView;
+    @Bind(R.id.re_comment)
+    RelativeLayout commentLayout;
     private String postId;
 
     private CommentAdapter adapter;
@@ -62,8 +67,9 @@ public class CommentActivity extends BaseActivity {
 
     @Override
     protected void initView() {
-//        postId = getIntent().getStringExtra(POST_ID);
-        postId = "59754cbf128fe155ce7334d2";
+        postId = getIntent().getStringExtra(POST_ID);
+        posterId = getIntent().getStringExtra(POSTER_ID);
+        LogUtils.d("postId = "+posterId);
         if (TextUtils.isEmpty(postId)){
             showEmpty();
             return;
@@ -72,6 +78,17 @@ public class CommentActivity extends BaseActivity {
         recyclerView.addItemDecoration(new DividerItemDecoration(this,LinearLayoutManager.VERTICAL));
         adapter = new CommentAdapter(this);
         recyclerView.setAdapter(adapter);
+        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+                if (newState == RecyclerView.SCROLL_STATE_IDLE)
+                    commentLayout.setVisibility(View.VISIBLE);
+                else {
+                    commentLayout.setVisibility(View.INVISIBLE);
+                }
+            }
+        });
 
         fetchData();
     }
@@ -150,9 +167,6 @@ public class CommentActivity extends BaseActivity {
             Toast.makeText(this, "评论不可为空...", Toast.LENGTH_SHORT).show();
             return;
         }
-//        posterId = SPUtils.getString(SPUtils.USER_ID,null);
-        posterId = "59754d1bfe88c2c1d45b156d";
-
         if (TextUtils.isEmpty(posterId)){
             Toast.makeText(this, "未登录，请登录", Toast.LENGTH_SHORT).show();
             // TODO: 2017/8/16 跳转到登陆界面
@@ -193,7 +207,7 @@ public class CommentActivity extends BaseActivity {
             @Override
             public void done(AVException e) {
                 if (e == null){
-//                    addNewComment(content,"刚刚");
+                    addNewComment(content,"刚刚");
                     fetchData();
                 }
             }

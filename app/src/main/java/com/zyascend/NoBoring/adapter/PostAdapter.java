@@ -65,8 +65,7 @@ public class PostAdapter extends RecyclerArrayAdapter<PostResponse> {
 
 
 
-    public class PostHolder extends BaseViewHolder<PostResponse> implements View.OnClickListener,
-            ViewSwitcher.ViewFactory {
+    public class PostHolder extends BaseViewHolder<PostResponse> implements View.OnClickListener{
 
         private TextView tvUserName;
         private TextView tvDate;
@@ -80,6 +79,7 @@ public class PostAdapter extends RecyclerArrayAdapter<PostResponse> {
 
         private TextView tvLikeCount;
         private TextView tvCommentCount;
+        private PostResponse data;
 
         PostHolder(View view){
             super(view);
@@ -101,6 +101,8 @@ public class PostAdapter extends RecyclerArrayAdapter<PostResponse> {
         public void setData(PostResponse data) {
             super.setData(data);
             if (data == null)return;
+
+            this.data = data;
             tvContent.setText(data.getContent());
             tvUserName.setText(data.getPoster().getUsername());
             tvDate.setText(data.getUpdatedAt());
@@ -159,41 +161,34 @@ public class PostAdapter extends RecyclerArrayAdapter<PostResponse> {
                         //点过赞
                         btnLike.setImageResource(R.drawable.ic_unlike_gray_24dp);
                         //减少赞数
-                        decrement(tvLikeCount);
+                        decrement();
+                        //赞数不可能为负数
+                        int num = data.getLikesCount()-1;
+                        tvLikeCount.setText(String.valueOf(num<0?0:num));
                     }else {
                         isLikedMap.put(position,true);
                         //点过赞
                         btnLike.setImageResource(R.drawable.ic_liked_red_24dp);
-                        //减少赞数
-                        increment(tvLikeCount);
+                        //增加赞数
+                        increment();
+                        tvLikeCount.setText(String.valueOf(data.getLikesCount()+1));
                     }
                     break;
             }
             notifyItemChanged(position,null);
         }
 
-        private void decrement(TextView view) {
-            int currentNum = Integer.parseInt(view.getText().toString());
-            view.setText(String.valueOf(currentNum-1 <= 0 ? 0 : currentNum-1));
+        private void decrement() {
             if (itemChildViewListener != null){
                 itemChildViewListener.onClick(getAdapterPosition(),VIEW_BTN_LIKE,OPERATE_DECRE);
             }
         }
 
-        private void increment(TextView view) {
-            int currentNum = Integer.parseInt(view.getText().toString());
-            view.setText(String.valueOf(currentNum+1));
+        private void increment() {
             if (itemChildViewListener != null){
                 itemChildViewListener.onClick(getAdapterPosition(),VIEW_BTN_LIKE,OPERATE_INCRE);
             }
         }
 
-        @Override
-        public View makeView() {
-            TextView textView = new TextView(mContext);
-            textView.setTextSize(15);
-            textView.setGravity(Gravity.CENTER);
-            return textView;
-        }
     }
 }

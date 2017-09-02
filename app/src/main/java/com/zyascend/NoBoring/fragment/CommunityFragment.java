@@ -73,7 +73,7 @@ public class CommunityFragment extends BaseFragment implements SwipeRefreshLayou
     private void loadData() {
 
         Map<String,String> requsetMap = new HashMap<>();
-        requsetMap.put("order","-createdAt");//or -createdAt
+        requsetMap.put("order","-createdAt");//or
         requsetMap.put("limit","10");
         requsetMap.put("include","poster,picture");
         requsetMap.put("skip",String.valueOf((page-1)*10));
@@ -96,7 +96,7 @@ public class CommunityFragment extends BaseFragment implements SwipeRefreshLayou
                     @Override
                     public void onError(Throwable e) {
                         showError();
-                        Log.d(TAG, "onError: "+e.getMessage());
+                        LogUtils.e("onError: "+e.getMessage());
                     }
 
                     @Override
@@ -150,7 +150,7 @@ public class CommunityFragment extends BaseFragment implements SwipeRefreshLayou
                 }
             }
         });
-        subscribeEvent();
+//        subscribeEvent();
     }
 
     private void doOnItemClick(int position) {
@@ -204,6 +204,7 @@ public class CommunityFragment extends BaseFragment implements SwipeRefreshLayou
     @Override
     public void onLoadMore() {
         loadData();
+        adapter.stopMore();
     }
 
     @Override

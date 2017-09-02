@@ -93,7 +93,7 @@ public class ZhihuService {
                 //检查CacheControl是否为空
                 String cacheControl = request.cacheControl().toString();
                 if (TextUtils.isEmpty(cacheControl)){
-                    cacheControl = "Cache-Control: public, max-age=" + MAX_AGE_DEFAULT;
+                    cacheControl = "public, max-age=" + MAX_AGE_DEFAULT;
                 }
 
                 finalResponse = baseResponse.newBuilder()
@@ -105,11 +105,11 @@ public class ZhihuService {
                         .header("X-LC-Key","VVIjOnCkOuS4s2ETvmCavUus")
                         .build();
             }else {
-
                 finalResponse = baseResponse.newBuilder()
                         .removeHeader("Pragma")
                         .removeHeader("Cache-Control")
                         .removeHeader("ETag")
+                        //标识只使用缓存（当前无网）
                         .header("Cache-Control", "public, only-if-cached, max-stale=" + MAX_STALE_DEFAULT)
                         .header("X-LC-Id","ioJGwMTChBTt0qRdhWFhhEye-gzGzoHsz")
                         .header("X-LC-Key","VVIjOnCkOuS4s2ETvmCavUus")

@@ -19,6 +19,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.avos.avoscloud.AVUser;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.zyascend.NoBoring.R;
@@ -174,7 +175,7 @@ public class UserActivity extends BaseActivity{
 
     private void bindUserData(UserResponse data) {
         if (data == null)return;
-
+        LogUtils.d("");
         tvPostCount.setText(String.valueOf(data.getPostCount()));
         tvFolloweeCount.setText(String.valueOf(data.getFolloweeCount()));
         tvFollowerCount.setText(String.valueOf(data.getFollowerCount()));
@@ -191,9 +192,9 @@ public class UserActivity extends BaseActivity{
     }
 
     private void loadPostData(String userId) {
-
+        LogUtils.d("load post");
         Map<String,String> requsetMap = new HashMap<>();
-        requsetMap.put("order","createdAt");//or -createdAt
+        requsetMap.put("order","-createdAt");//or -createdAt
         requsetMap.put("include","picture");
         requsetMap.put("where","{\"posterId\":\""+userId+"\"}");
         LeanCloudService.getInstance().getAPI()
@@ -208,17 +209,22 @@ public class UserActivity extends BaseActivity{
                     @Override
                     public void onError(Throwable e) {
                         showLoadComplete(e.getMessage());
+                        LogUtils.e("load post"+e.getMessage());
                     }
 
                     @Override
                     public void onNext(ListResponse<PostResponse> data) {
-                        if(data == null)return;
+                        if(data == null){
+                            LogUtils.d("data == null");
+                            return;
+                        }
                         bindPostData(data.getResults());
                     }
                 });
     }
 
     private void bindPostData(List<PostResponse> results) {
+        LogUtils.d("bind post data");
         if (isGridMode){
             //grid布局
             recyclerView.setLayoutManager(gridLayoutManager);
